@@ -1,0 +1,26 @@
+{
+  "name": "soteria-desktop",
+  "version": "0.1.0",
+  "tasks": {
+    "dev": "deno run -A npm:vite dev",
+    "build": "deno run -A npm:vite build",
+    "preview": "deno run -A npm:vite preview",
+    "prepare": "deno run -A npm:svelte-kit sync || echo ''",
+    "check": "deno run -A npm:svelte-kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "deno run -A npm:svelte-kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json --watch",
+    "tauri": "deno run -A npm:@tauri-apps/cli"
+  },
+  "imports": {
+    "@sveltejs/adapter-static": "npm:@sveltejs/adapter-static@^3.0.10",
+    "@sveltejs/kit": "npm:@sveltejs/kit@^2.65.1",
+    "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^7.1.2",
+    "@tauri-apps/api": "npm:@tauri-apps/api@^2",
+    "@tauri-apps/cli": "npm:@tauri-apps/cli@^2",
+    "@tauri-apps/plugin-opener": "npm:@tauri-apps/plugin-opener@^2",
+    "svelte": "npm:svelte@^5.56.3",
+    "svelte-check": "npm:svelte-check@^4.6.0",
+    "typescript": "npm:typescript@~6.0.3",
+    "vite": "npm:vite@^8.0.16"
+  },
+  "exports": {}
+}

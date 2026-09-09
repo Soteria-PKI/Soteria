@@ -1,0 +1,20 @@
+{
+  "name": "soteria-frontend",
+  "version": "0.1.0",
+  "tasks": {
+    "dev": "deno run -A npm:vite",
+    "build": "deno run -A npm:vite build",
+    "preview": "deno run -A npm:vite preview",
+    "check": "deno run -A npm:svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "imports": {
+    "@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@^7.3.0",
+    "@tsconfig/svelte": "npm:@tsconfig/svelte@^5.0.8",
+    "@types/node": "npm:@types/node@^24.13.3",
+    "svelte": "npm:svelte@^5.56.10",
+    "svelte-check": "npm:svelte-check@^4.7.6",
+    "typescript": "npm:typescript@~6.0.2",
+    "vite": "npm:vite@^8.2.2"
+  },
+  "exports": {}
+}

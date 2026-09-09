@@ -1,0 +1,8 @@
+rust: 
+  version: "1.98.1"
+  syncToolchainConfig: true
+  bins:
+    - "cargo-nextest"
+
+deno:
+  version: "2.9.6"

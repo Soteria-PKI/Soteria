@@ -1,0 +1,4 @@
+language: "typescript"
+tasks:
+  dev:
+    command: "deno task dev"

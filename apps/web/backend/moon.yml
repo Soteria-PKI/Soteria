@@ -1,0 +1,6 @@
+language: "rust"
+tasks:
+  build: 
+    command: "cargo build"
+  dev:
+    command: "cargo run"

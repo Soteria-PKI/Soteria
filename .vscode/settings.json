@@ -1,0 +1,6 @@
+{
+  "deno.enable": true,
+  "deno.lint": true,
+  "rust-analyzer.linkedProjects": ["./Cargo.toml"],
+  "svelte.enable-ts-plugin": true
+}

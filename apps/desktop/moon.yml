@@ -1,0 +1,6 @@
+language: "rust"
+tasks:
+  dev:
+    command: "deno task dev"
+  build:
+    command: "deno task build"

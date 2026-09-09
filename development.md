@@ -44,4 +44,10 @@ This type is then followed by a space, with the commit message starting with a l
 
 ## Hooks
 
-To synchronize hooks across the repository use `moon sync hooks`. This has to be done if a hook is created or if an existing hook has been modified. 
+To synchronize hooks across the repository use `moon sync hooks`. This has to be done if a hook is created or if an existing hook has been modified.
+
+## Database
+
+The database can be ran using `docker compose up -d` while having Docker Desktop open. The database's contents can be visible via the PgAdmin RDBMS at [`http://localhost:5050`](http://localhost:5050). The informations to log in to PgAdmin are around in `.env` with the values `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD`.
+
+Then connecting the database can be done with the remaining few elements to match when creating a server.

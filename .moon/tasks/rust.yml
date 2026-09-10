@@ -1,0 +1,10 @@
+tasks:
+  check:
+    command: "cargo check"
+  clippy:
+    command: "cargo clippy"
+
+  lint:
+    deps:
+      - "clippy"
+      - "check"

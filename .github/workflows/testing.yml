@@ -1,0 +1,39 @@
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  testing:
+    name: "Tests"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+          cache: false
+
+      - name: "add to path"
+        run: 'echo "$HOME/.cargo/bin" >> $GITHUB_PATH'
+
+      - name: Download Rust Toolchain
+        run: |
+          rm -rf ~/.rustup/toolchains/*
+          ~/.cargo/bin/cargo --version
+
+      - name: "Setup Toolchains"
+        run: "moon setup"
+
+      - name: "Setup Dependencies"
+        run: |
+          sudo apt update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+
+      - name: "Tests"
+        run: "moon run :lint"

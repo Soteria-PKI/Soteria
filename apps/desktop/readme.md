@@ -1,3 +1,3 @@
-# Soteria desktop
+# Soteria (desktop)
 
-Ce projet est l'application bureau de Soteria.
+Ce projet comporte le code pour l'application bureau de Soteria.

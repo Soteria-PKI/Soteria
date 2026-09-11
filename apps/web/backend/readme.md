@@ -1,3 +1,3 @@
 # Soteria (backend)
 
-Ce projet est le backend de la composante web de Soteria.
+Ce projet comporte le code pour le backend de la composante web de Soteria.

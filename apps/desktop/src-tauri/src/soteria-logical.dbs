@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Soteria_logical" database="LogicalDesign" id="78be56cf-93a6-4370-ad09-396edcadfa61" >
+	<comment><![CDATA[Logical model design for Soteria]]></comment>
+	<schema name="Soteria_logical" >
+		<table name="appointment" prior="appoin" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="appointment_number" type="INT" mandatory="y" />
+			<column name="date_taken" type="DATE" mandatory="y" >
+				<comment><![CDATA[when the appointment was booked]]></comment>
+			</column>
+			<column name="date_occurring" type="DATE" mandatory="y" >
+				<comment><![CDATA[when the appointment will take place]]></comment>
+			</column>
+			<column name="approved" type="BOOLEAN" mandatory="y" >
+				<defo><![CDATA[FALSE]]></defo>
+			</column>
+			<column name="service_id" type="INT" mandatory="y" />
+			<column name="customer_id" type="INT" mandatory="y" />
+			<index name="pk_appointment" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_appointment_customer" to_schema="Soteria_logical" to_table="customer" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="customer_id" pk="id" />
+			</fk>
+			<fk name="fk_appointment_service" to_schema="Soteria_logical" to_table="service" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="service_id" pk="id" />
+			</fk>
+		</table>
+		<table name="assembly" prior="assemb" >
+			<comment><![CDATA[Represents an inventory item that is composed of a multiple of different items.]]></comment>
+			<column name="id" type="INT" mandatory="y" />
+			<column name="sku" type="VARCHAR" length="256" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="cost" type="DECIMAL" length="255" decimal="2" />
+			<column name="price" type="DECIMAL" length="256" decimal="2" />
+			<column name="discount_id" prior="discount" type="INT" />
+			<column name="tax_class_id" prior="tax_class" type="INT" />
+			<column name="tag_id" prior="tag" type="INT" />
+			<index name="pk_assembly" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_assembly_discount" to_schema="Soteria_logical" to_table="discount" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="discount_id" pk="id" />
+			</fk>
+			<fk name="fk_assembly_tag" to_schema="Soteria_logical" to_table="tag" type="ManyToMany" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="tag_id" pk="id" />
+			</fk>
+			<fk name="fk_assembly_tax_class" to_schema="Soteria_logical" to_table="tax_class" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="tax_class_id" pk="id" />
+			</fk>
+		</table>
+		<table name="box" prior="Entity" >
+			<comment><![CDATA[Represents a physical inventory item containing in itself multiples of a different, singular item.]]></comment>
+			<column name="id" type="INT" mandatory="y" />
+			<column name="sku" type="VARCHAR" length="256" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="cost" type="DECIMAL" length="255" decimal="2" />
+			<column name="price" type="DECIMAL" length="256" decimal="2" />
+			<column name="quantity" type="INT" />
+			<column name="contained_item_id" prior="contained_item" type="INT" mandatory="y" />
+			<column name="contained_quantity" type="INT" />
+			<column name="discount_id" prior="discount" type="INT" />
+			<column name="tax_class_id" prior="tax_class" type="INT" mandatory="y" />
+			<column name="vendor_id" prior="vendor" type="INT" />
+			<column name="tag_id" prior="tag" type="INT" />
+			<index name="pk_box" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_box_discount" to_schema="Soteria_logical" to_table="discount" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="discount_id" pk="id" />
+			</fk>
+			<fk name="fk_box_vendor" to_schema="Soteria_logical" to_table="vendor" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="vendor_id" pk="id" />
+			</fk>
+			<fk name="fk_box_tag" to_schema="Soteria_logical" to_table="tag" type="ManyToMany" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="tag_id" pk="id" />
+			</fk>
+			<fk name="fk_box_tax_class" to_schema="Soteria_logical" to_table="tax_class" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="tax_class_id" pk="id" />
+			</fk>
+			<fk name="fk_box_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="contained_item_id" pk="id" />
+			</fk>
+		</table>
+		<table name="category" prior="cate" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="description" type="VARCHAR" length="512" />
+			<index name="pk_category" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="customer" prior="Entity" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="date_created" type="DATE" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="email" type="VARCHAR" length="256" />
+			<column name="phone_number" type="VARCHAR" length="256" />
+			<index name="pk_customer" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="discount" prior="discou" >
+			<comment><![CDATA[a discount, either by whole dollar amount or percentage.]]></comment>
+			<column name="id" type="INT" mandatory="y" />
+			<column name="discount_type" type="VARCHAR" length="256" />
+			<column name="amount" type="INT" />
+			<index name="pk_discount" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="employee" prior="emplo" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="employee_number" type="VARCHAR" length="128" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="date_created" type="DATE" mandatory="y" />
+			<column name="email" type="VARCHAR" length="256" />
+			<column name="phone_number" type="VARCHAR" length="256" />
+			<column name="title" type="VARCHAR" length="256" />
+			<index name="pk_employee" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="item" prior="Entity" spec="" >
+			<comment><![CDATA[Refers to any physical good stored in the inventory.]]></comment>
+			<column name="id" type="INT" mandatory="y" />
+			<column name="sku" type="VARCHAR" length="256" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="cost" type="DECIMAL" length="255" decimal="2" />
+			<column name="price" type="DECIMAL" length="256" decimal="2" />
+			<column name="quantity" type="INT" />
+			<column name="discount_id" prior="discount" type="INT" />
+			<column name="tax_class_id" prior="tax_class" type="INT" mandatory="y" />
+			<column name="vendor_id" prior="vendor" type="INT" />
+			<column name="tag_id" prior="tag" type="INT" />
+			<index name="pk_item" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_item_discount" to_schema="Soteria_logical" to_table="discount" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="discount_id" pk="id" />
+			</fk>
+			<fk name="fk_item_vendor" to_schema="Soteria_logical" to_table="vendor" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="vendor_id" pk="id" />
+			</fk>
+			<fk name="fk_item_tag" to_schema="Soteria_logical" to_table="tag" type="ManyToMany" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="tag_id" pk="id" />
+			</fk>
+			<fk name="fk_item_tax_class" to_schema="Soteria_logical" to_table="tax_class" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="tax_class_id" pk="id" />
+			</fk>
+		</table>
+		<table name="junc_assembly_item" prior="junc_assembly_" >
+			<column name="assembly_id" type="INT" mandatory="y" />
+			<column name="item_id" type="INT" mandatory="y" />
+			<column name="quantity" type="INT" mandatory="y" />
+			<index name="pk_junc_assembly_item" unique="PRIMARY_KEY" >
+				<column name="assembly_id" />
+				<column name="item_id" />
+			</index>
+			<fk name="fk_junc_assembly_item_assembly" to_schema="Soteria_logical" to_table="assembly" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="assembly_id" pk="id" />
+			</fk>
+			<fk name="fk_junc_assembly_item_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="item_id" pk="id" />
+			</fk>
+		</table>
+		<table name="labour" prior="lab" >
+			<comment><![CDATA[non-physical item representing a service or task that can be sold and has a cost based on man-hours.]]></comment>
+			<column name="id" type="INT" mandatory="y" />
+			<column name="sku" type="VARCHAR" length="256" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="cost" type="DECIMAL" length="255" decimal="2" />
+			<column name="price" type="DECIMAL" length="256" decimal="2" />
+			<column name="duration" type="INT" >
+				<comment><![CDATA[measured in minutes]]></comment>
+			</column>
+			<column name="discount_id" prior="discount" type="INT" />
+			<column name="tax_class_id" prior="tax_class" type="INT" mandatory="y" />
+			<column name="tag_id" prior="tag" type="INT" />
+			<index name="pk_labour" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_labour_discount" to_schema="Soteria_logical" to_table="discount" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="discount_id" pk="id" />
+			</fk>
+			<fk name="fk_labour_tag" to_schema="Soteria_logical" to_table="tag" type="ManyToMany" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="tag_id" pk="id" />
+			</fk>
+			<fk name="fk_labour_tax_class" to_schema="Soteria_logical" to_table="tax_class" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="tax_class_id" pk="id" />
+			</fk>
+		</table>
+		<table name="purchase_order" prior="purchase_or" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="order_id" type="VARCHAR" length="256" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="vendor_id" type="INT" mandatory="y" />
+			<column name="order_date" type="DATE" mandatory="y" />
+			<column name="arrival_date" type="DATE" />
+			<column name="status" type="VARCHAR" length="256" />
+			<column name="item_id" type="INT" />
+			<column name="box_id" type="INT" />
+			<index name="pk_purchase_order" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_purchase_order_vendor" to_schema="Soteria_logical" to_table="vendor" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="vendor_id" pk="id" />
+			</fk>
+			<fk name="fk_purchase_order_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="n" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="item_id" pk="id" />
+			</fk>
+			<fk name="fk_purchase_order_box" to_schema="Soteria_logical" to_table="box" type="NonIdentifying" mandatory="n" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="box_id" pk="id" />
+			</fk>
+		</table>
+		<table name="sale" prior="sa" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="timestamp" type="DATETIME" length="12" mandatory="y" />
+			<column name="customer_id" prior="customer" type="INT" mandatory="y" />
+			<column name="employee_id" prior="employee" type="INT" mandatory="y" />
+			<column name="discount_id" prior="discount" type="INT" />
+			<column name="box_id" type="INT" />
+			<column name="item_id" type="INT" />
+			<column name="assembly_id" type="INT" />
+			<column name="labour_id" type="INT" />
+			<column name="service_order_id" type="INT" />
+			<index name="pk_sale" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_sale_discount" to_schema="Soteria_logical" to_table="discount" type="NonIdentifying" mandatory="n" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="discount_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_employee" to_schema="Soteria_logical" to_table="employee" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="employee_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_customer" to_schema="Soteria_logical" to_table="customer" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" options="" >
+				<fk_column name="customer_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="item_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_box" to_schema="Soteria_logical" to_table="box" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="box_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_labour" to_schema="Soteria_logical" to_table="labour" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="labour_id" pk="id" />
+			</fk>
+			<fk name="fk_sale_assembly" to_schema="Soteria_logical" to_table="assembly" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="assembly_id" pk="id" />
+			</fk>
+		</table>
+		<table name="service" prior="servic" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<column name="description" type="VARCHAR" length="512" />
+			<column name="category_id" type="INT" />
+			<column name="employee_id" type="INT" />
+			<column name="item_id" type="INT" />
+			<column name="assembly_id" type="INT" />
+			<column name="labour_id" type="INT" />
+			<index name="pk_service" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_service_category" to_schema="Soteria_logical" to_table="category" type="NonIdentifying" mandatory="n" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="category_id" pk="id" />
+			</fk>
+			<fk name="fk_service_employee" to_schema="Soteria_logical" to_table="employee" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="employee_id" pk="id" />
+			</fk>
+			<fk name="fk_service_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="item_id" pk="id" />
+			</fk>
+			<fk name="fk_service_assembly" to_schema="Soteria_logical" to_table="assembly" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="assembly_id" pk="id" />
+			</fk>
+			<fk name="fk_service_labour" to_schema="Soteria_logical" to_table="labour" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="labour_id" pk="id" />
+			</fk>
+		</table>
+		<table name="service_order" prior="service_orde" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="date_created" type="DATE" mandatory="y" />
+			<column name="date_due" prior="date_dute" type="DATE" />
+			<column name="employee_id" type="INT" mandatory="y" />
+			<column name="customer_id" type="INT" mandatory="y" />
+			<column name="notes_receipt" prior="notes-receipt" type="VARCHAR" length="256" />
+			<column name="notes_internal" type="VARCHAR" length="256" />
+			<column name="item_id" type="INT" />
+			<column name="labour_id" type="INT" />
+			<column name="assembly_id" type="INT" />
+			<index name="pk_service_order" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_service_order_item" to_schema="Soteria_logical" to_table="item" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="item_id" pk="id" />
+			</fk>
+			<fk name="fk_service_order_labour" to_schema="Soteria_logical" to_table="labour" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="labour_id" pk="id" />
+			</fk>
+			<fk name="fk_service_order_assembly" to_schema="Soteria_logical" to_table="assembly" type="NonIdentifying" mandatory="n" cardinality="ZeroMore" range_from="0" range_to="0" >
+				<fk_column name="assembly_id" pk="id" />
+			</fk>
+			<fk name="fk_service_order_employee" to_schema="Soteria_logical" to_table="employee" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="employee_id" pk="id" />
+			</fk>
+			<fk name="fk_service_order_customer" to_schema="Soteria_logical" to_table="customer" type="NonIdentifying" mandatory="y" cardinality="One" range_from="0" range_to="0" >
+				<fk_column name="customer_id" pk="id" />
+			</fk>
+		</table>
+		<table name="tag" prior="Entity" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" />
+			<index name="pk_tag" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="tax_class" prior="tax_clas" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="type" type="VARCHAR" length="256" mandatory="y" />
+			<column name="amount" type="DECIMAL" length="16" decimal="8" mandatory="y" />
+			<index name="pk_tax_class" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="vendor" prior="ven" >
+			<column name="id" type="INT" mandatory="y" />
+			<column name="name" type="VARCHAR" length="256" mandatory="y" />
+			<index name="pk_vendor" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="9e1f004d-eb67-4fbd-9641-45d16c3934e0" >
+		<diagram name="Default Diagram" id="61cf5935-f575-4361-a825-21c5bc7e8716" show_column_type="y" show_relation="columns" >
+			<entity schema="Soteria_logical" name="appointment" color="C1D8EE" x="1368" y="418" />
+			<entity schema="Soteria_logical" name="assembly" color="C1D8EE" x="608" y="836" />
+			<entity schema="Soteria_logical" name="box" color="C1D8EE" x="152" y="836" />
+			<entity schema="Soteria_logical" name="category" color="C1D8EE" x="1045" y="1197" />
+			<entity schema="Soteria_logical" name="customer" color="C1D8EE" x="1425" y="646" />
+			<entity schema="Soteria_logical" name="discount" color="C1D8EE" x="760" y="304" />
+			<entity schema="Soteria_logical" name="employee" color="C1D8EE" x="1387" y="836" />
+			<entity schema="Soteria_logical" name="item" color="C1D8EE" x="380" y="836" />
+			<entity schema="Soteria_logical" name="junc_assembly_item" color="C1D8EE" x="513" y="1121" />
+			<entity schema="Soteria_logical" name="labour" color="C1D8EE" x="836" y="836" />
+			<entity schema="Soteria_logical" name="purchase_order" color="C1D8EE" x="209" y="380" />
+			<entity schema="Soteria_logical" name="sale" color="C1D8EE" x="1064" y="475" />
+			<entity schema="Soteria_logical" name="service" color="C1D8EE" x="1444" y="1045" />
+			<entity schema="Soteria_logical" name="service_order" color="C1D8EE" x="1064" y="836" />
+			<entity schema="Soteria_logical" name="tag" color="C1D8EE" x="570" y="608" />
+			<entity schema="Soteria_logical" name="tax_class" color="C1D8EE" x="152" y="1197" />
+			<entity schema="Soteria_logical" name="vendor" color="C1D8EE" x="494" y="190" />
+			<callout x="57" y="57" pointer="Round" >
+				<comment><![CDATA[- Create new entities by right-clicking the diagram. 
+- Double-click entity headers to edit.
+- Get a better understanding of the schema by creating multiple diagrams.
+- Convert the logical design to physical design and deploy it into the database.]]></comment>
+			</callout>
+		</diagram>
+	</diagram_group>
+</project>

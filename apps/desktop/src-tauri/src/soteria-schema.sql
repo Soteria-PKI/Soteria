@@ -1,316 +1,293 @@
-CREATE TABLE IF NOT EXISTS "assembly" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"sku" VARCHAR,
-	"msrp" NUMERIC,
-	"price" NUMERIC,
-	"cost" NUMERIC,
-	"quantity" INTEGER,
-	"weight" NUMERIC,
-	"dimensions" NUMERIC,
-	"discounts" INTEGER,
-	"image" BLOB,
-	"tax_class" INTEGER,
-	"vendor" INTEGER,
-	FOREIGN KEY ("id") REFERENCES "service_order"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "service"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "sale"("items")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_assembly"("assembly")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_item_assembly"("assembly")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_assembly"("assembly")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  category                   ---
+---------------------------------------------------
+CREATE TABLE category ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	name                 TEXT NOT NULL    ,
+	description          TEXT     
+ );
 
-CREATE TABLE IF NOT EXISTS "appointment" (
-	"id" INTEGER PRIMARY KEY,
-	"date" DATETIME NOT NULL,
-	"name" VARCHAR NOT NULL,
-	"approved" BOOLEAN NOT NULL,
-	"customer" INTEGER NOT NULL,
-	"service" INTEGER NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "junc_business_appointment"("appointment")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_appointment"("appointment")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  customer                   ---
+---------------------------------------------------
+CREATE TABLE customer ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	date_created         DATE NOT NULL    ,
+	name                 TEXT NOT NULL    ,
+	email                TEXT     ,
+	phone_number         TEXT     
+ );
 
-CREATE TABLE IF NOT EXISTS "box" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"sku" VARCHAR,
-	"msrp" NUMERIC,
-	"price" NUMERIC,
-	"cost" NUMERIC,
-	"quantity" INTEGER,
-	"weight" NUMERIC,
-	"dimensions" NUMERIC,
-	"discounts" INTEGER,
-	"image" BLOB,
-	"tax_class" INTEGER,
-	"vendor" INTEGER,
-	"contained_quantity" INTEGER,
-	"item" INTEGER NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "service_order"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_box"("box")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  discount                   ---
+---------------------------------------------------
+CREATE TABLE discount ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	discount_type        TEXT     ,
+	amount               INT     
+ );
 
-CREATE TABLE IF NOT EXISTS "business" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"api_key" VARCHAR NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "junc_business_appointment"("business")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  employee                   ---
+---------------------------------------------------
+CREATE TABLE employee ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	employee_number      TEXT NOT NULL    ,
+	name                 TEXT NOT NULL    ,
+	date_created         DATE NOT NULL    ,
+	email                TEXT     ,
+	phone_number         TEXT     ,
+	title                TEXT     
+ );
 
-CREATE TABLE IF NOT EXISTS "category" (
-	"id" INTEGER PRIMARY KEY,
-	"id" INTEGER NOT NULL UNIQUE,
-	"name" VARCHAR NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "service"("category")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                     tag                     ---
+---------------------------------------------------
+CREATE TABLE tag ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	name                 TEXT     
+ );
 
-CREATE TABLE IF NOT EXISTS "customer" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"date_created" DATE NOT NULL,
-	"email" VARCHAR,
-	"phone_number" VARCHAR,
-	FOREIGN KEY ("id") REFERENCES "service_order"("customer")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "appointment"("customer")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  tax_class                  ---
+---------------------------------------------------
+CREATE TABLE tax_class ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	type                 TEXT NOT NULL    ,
+	amount               DECIMAL(16) NOT NULL    
+ );
 
-CREATE TABLE IF NOT EXISTS "discount" (
-	"id" INTEGER PRIMARY KEY,
-	"type" VARCHAR,
-	"amount" INTEGER,
-	FOREIGN KEY ("id") REFERENCES "item"("discounts")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "box"("discounts")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "assembly"("discounts")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "sale"("discount")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  assembly                   ---
+---------------------------------------------------
+CREATE TABLE assembly ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	sku                  TEXT     ,
+	name                 TEXT NOT NULL    ,
+	cost                 DECIMAL(255)     ,
+	price                DECIMAL(256)     ,
+	discount_id          INT     ,
+	tax_class_id         INT     ,
+	tag_id               INT     ,
+	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
+	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "employee" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"date_created" DATE NOT NULL,
-	"identifier" VARCHAR NOT NULL UNIQUE,
-	"email" VARCHAR,
-	"phone_number" VARCHAR,
-	"role" VARCHAR,
-	FOREIGN KEY ("id") REFERENCES "service_order"("employee")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "service"("employee")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "sale"("employee")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                assembly_tag                 ---
+---------------------------------------------------
+CREATE TABLE assembly_tag ( 
+	id                   INT     ,
+	id_001               INT     ,
+	CONSTRAINT pk_assembly_tag UNIQUE ( id, id_001 ),
+	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( id_001 ) REFERENCES assembly( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "item" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"sku" VARCHAR,
-	"msrp" NUMERIC,
-	"price" NUMERIC,
-	"cost" NUMERIC,
-	"quantity" INTEGER,
-	"weight" NUMERIC,
-	"dimensions" NUMERIC,
-	"discounts" INTEGER,
-	"image" BLOB,
-	"tax_class" INTEGER,
-	"vendor" INTEGER,
-	FOREIGN KEY ("id") REFERENCES "box"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "service_order"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "service"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "sale"("items")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_item"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_item_assembly"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_item"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                   labour                    ---
+---------------------------------------------------
+CREATE TABLE labour ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	sku                  TEXT     ,
+	name                 TEXT NOT NULL    ,
+	cost                 DECIMAL(255)     ,
+	price                DECIMAL(256)     ,
+	duration             INT     ,
+	discount_id          INT     ,
+	tax_class_id         INT NOT NULL    ,
+	tag_id               INT     ,
+	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
+	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "labour" (
-	"id" INTEGER PRIMARY KEY,
-	"id" INTEGER NOT NULL UNIQUE,
-	"name" VARCHAR NOT NULL,
-	"sku" VARCHAR,
-	"price" NUMERIC,
-	"cost" NUMERIC,
-	"discounts" INTEGER,
-	"tax_class" INTEGER,
-	"vendor" INTEGER,
-	"duration" INTEGER NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "service_order"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "service"("item")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "sale"("items")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_labour"("labour")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_labour"("labour")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                 labour_tag                  ---
+---------------------------------------------------
+CREATE TABLE labour_tag ( 
+	id                   INT     ,
+	id_001               INT     ,
+	CONSTRAINT pk_labour_tag UNIQUE ( id, id_001 ),
+	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( id_001 ) REFERENCES labour( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "purchase_order" (
-	"id" INTEGER PRIMARY KEY,
-	"id" INTEGER NOT NULL UNIQUE,
-	"items" INTEGER NOT NULL,
-	"vendor" INTEGER,
-	"order_id" VARCHAR NOT NULL,
-	"name(alias)" VARCHAR,
-	"order_date" DATE,
-	"arrival_date" DATE,
-	"status" VARCHAR NOT NULL,
-	FOREIGN KEY ("items") REFERENCES "item"("id")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                   vendor                    ---
+---------------------------------------------------
+CREATE TABLE vendor ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	name                 TEXT NOT NULL    
+ );
 
-CREATE TABLE IF NOT EXISTS "sale" (
-	"id" INTEGER PRIMARY KEY,
-	"id" INTEGER NOT NULL UNIQUE,
-	"date" DATE NOT NULL,
-	"customer" INTEGER NOT NULL,
-	"items" INTEGER NOT NULL,
-	"services" INTEGER NOT NULL,
-	"discount" INTEGER NOT NULL,
-	"employee" INTEGER NOT NULL,
-	FOREIGN KEY ("customer") REFERENCES "customer"("id")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                    item                     ---
+---------------------------------------------------
+CREATE TABLE item ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	sku                  TEXT     ,
+	name                 TEXT NOT NULL    ,
+	cost                 DECIMAL(255)     ,
+	price                DECIMAL(256)     ,
+	quantity             INT     ,
+	discount_id          INT     ,
+	tax_class_id         INT NOT NULL    ,
+	vendor_id            INT     ,
+	tag_id               INT     ,
+	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
+	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
+	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "service" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	"item" INTEGER,
-	"category" INTEGER NOT NULL,
-	"employee" INTEGER,
-	FOREIGN KEY ("id") REFERENCES "sale"("services")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_appointment"("service")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_labour"("service")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_item"("service")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_service_assembly"("service")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                     box                     ---
+---------------------------------------------------
+CREATE TABLE box ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	sku                  TEXT     ,
+	name                 TEXT NOT NULL    ,
+	cost                 DECIMAL(255)     ,
+	price                DECIMAL(256)     ,
+	quantity             INT     ,
+	contained_item_id    INT NOT NULL    ,
+	contained_quantity   INT     ,
+	discount_id          INT     ,
+	tax_class_id         INT NOT NULL    ,
+	vendor_id            INT     ,
+	tag_id               INT     ,
+	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
+	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
+	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  ,
+	FOREIGN KEY ( contained_item_id ) REFERENCES item( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "service_order" (
-	"id" INTEGER PRIMARY KEY,
-	"id" INTEGER NOT NULL UNIQUE,
-	"date_created" DATE NOT NULL,
-	"date_due" DATE,
-	"employee" INTEGER NOT NULL,
-	"customer" INTEGER NOT NULL,
-	"receipt_notes" VARCHAR,
-	"internal_notes" VARCHAR,
-	"item" INTEGER,
-);
+---------------------------------------------------
+---                   box_tag                   ---
+---------------------------------------------------
+CREATE TABLE box_tag ( 
+	id                   INT     ,
+	id_001               INT     ,
+	CONSTRAINT pk_box_tag UNIQUE ( id, id_001 ),
+	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( id_001 ) REFERENCES box( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "tag" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL UNIQUE,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_labour"("tag")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_item"("tag")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_assembly"("tag")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "junc_tag_box"("tag")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---                  item_tag                   ---
+---------------------------------------------------
+CREATE TABLE item_tag ( 
+	id                   INT     ,
+	id_001               INT     ,
+	CONSTRAINT pk_item_tag UNIQUE ( id, id_001 ),
+	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( id_001 ) REFERENCES item( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "vendor" (
-	"id" INTEGER PRIMARY KEY,
-	"name" VARCHAR NOT NULL,
-	FOREIGN KEY ("id") REFERENCES "purchase_order"("vendor")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "item"("vendor")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "assembly"("vendor")
-	ON UPDATE NO ACTION ON DELETE NO ACTION,
-	FOREIGN KEY ("id") REFERENCES "box"("vendor")
-	ON UPDATE NO ACTION ON DELETE NO ACTION
-);
+---------------------------------------------------
+---             junc_assembly_item              ---
+---------------------------------------------------
+CREATE TABLE junc_assembly_item ( 
+	assembly_id          INT NOT NULL    ,
+	item_id              INT NOT NULL    ,
+	quantity             INT NOT NULL    ,
+	CONSTRAINT pk_junc_assembly_item PRIMARY KEY ( assembly_id, item_id ),
+	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_business_appointment" (
-	"appointment" INTEGER NOT NULL,
-	"business" INTEGER NOT NULL,
-	PRIMARY KEY("appointment", "business")
-);
+---------------------------------------------------
+---               purchase_order                ---
+---------------------------------------------------
+CREATE TABLE purchase_order ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	order_id             TEXT NOT NULL    ,
+	name                 TEXT NOT NULL    ,
+	vendor_id            INT NOT NULL    ,
+	order_date           DATE NOT NULL    ,
+	arrival_date         DATE     ,
+	status               TEXT     ,
+	item_id              INT     ,
+	box_id               INT     ,
+	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
+	FOREIGN KEY ( box_id ) REFERENCES box( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_service_appointment" (
-	"service" INTEGER NOT NULL,
-	"appointment" INTEGER NOT NULL,
-	PRIMARY KEY("service", "appointment")
-);
+---------------------------------------------------
+---                    sale                     ---
+---------------------------------------------------
+CREATE TABLE sale ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	timestamp            DATETIME NOT NULL    ,
+	customer_id          INT NOT NULL    ,
+	employee_id          INT NOT NULL    ,
+	discount_id          INT     ,
+	box_id               INT     ,
+	item_id              INT     ,
+	assembly_id          INT     ,
+	labour_id            INT     ,
+	service_order_id     INT     ,
+	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
+	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
+	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
+	FOREIGN KEY ( box_id ) REFERENCES box( id )  ,
+	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  ,
+	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_tag_labour" (
-	"tag" INTEGER NOT NULL,
-	"labour" INTEGER NOT NULL,
-	PRIMARY KEY("tag", "labour")
-);
+---------------------------------------------------
+---                   service                   ---
+---------------------------------------------------
+CREATE TABLE service ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	name                 TEXT NOT NULL    ,
+	description          TEXT     ,
+	category_id          INT     ,
+	employee_id          INT     ,
+	item_id              INT     ,
+	assembly_id          INT     ,
+	labour_id            INT     ,
+	FOREIGN KEY ( category_id ) REFERENCES category( id )  ,
+	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
+	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  ,
+	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_tag_item" (
-	"tag" INTEGER NOT NULL,
-	"item" INTEGER NOT NULL,
-	PRIMARY KEY("tag", "item")
-);
+---------------------------------------------------
+---                 appointment                 ---
+---------------------------------------------------
+CREATE TABLE appointment ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	appointment_number   INT NOT NULL    ,
+	date_taken           DATE NOT NULL    ,
+	date_occurring       DATE NOT NULL    ,
+	approved             NUMERIC NOT NULL DEFAULT FALSE   ,
+	service_id           INT NOT NULL    ,
+	customer_id          INT NOT NULL    ,
+	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  ,
+	FOREIGN KEY ( service_id ) REFERENCES service( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_tag_assembly" (
-	"tag" INTEGER NOT NULL,
-	"assembly" INTEGER NOT NULL,
-	PRIMARY KEY("tag", "assembly")
-);
+---------------------------------------------------
+---                service_order                ---
+---------------------------------------------------
+CREATE TABLE service_order ( 
+	id                   INT NOT NULL  PRIMARY KEY  ,
+	date_created         DATE NOT NULL    ,
+	date_due             DATE     ,
+	employee_id          INT NOT NULL    ,
+	customer_id          INT NOT NULL    ,
+	notes_receipt        TEXT     ,
+	notes_internal       TEXT     ,
+	item_id              INT     ,
+	labour_id            INT     ,
+	assembly_id          INT     ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
+	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  ,
+	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  ,
+	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
+	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  
+ );
 
-CREATE TABLE IF NOT EXISTS "junc_item_assembly" (
-	"item" INTEGER NOT NULL,
-	"assembly" INTEGER NOT NULL,
-	PRIMARY KEY("item", "assembly")
-);
-
-CREATE TABLE IF NOT EXISTS "junc_tag_box" (
-	"tag" INTEGER NOT NULL,
-	"box" INTEGER NOT NULL,
-	PRIMARY KEY("tag", "box")
-);
-
-CREATE TABLE IF NOT EXISTS "junc_service_labour" (
-	"labour" INTEGER NOT NULL,
-	"service" INTEGER NOT NULL,
-	PRIMARY KEY("labour", "service")
-);
-
-CREATE TABLE IF NOT EXISTS "junc_service_assembly" (
-	"assembly" INTEGER NOT NULL,
-	"service" INTEGER NOT NULL,
-	PRIMARY KEY("assembly", "service")
-);
-
-CREATE TABLE IF NOT EXISTS "junc_service_item" (
-	"item" INTEGER NOT NULL,
-	"service" INTEGER NOT NULL,
-	PRIMARY KEY("item", "service")
-);

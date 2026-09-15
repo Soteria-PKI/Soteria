@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Soteria-Planki_logical" database="PostgreSQL" id="05cde017-7160-4ead-ad9e-7edf7285f642" >
+	<schema name="soteria-planki_logical" >
+		<table name="appointment" prior="appointmen" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="appointment_number" type="varchar" length="256" mandatory="y" />
+			<column name="date_taken" type="date" mandatory="y" />
+			<column name="date_occurring" type="date" mandatory="y" />
+			<column name="service_id" type="integer" mandatory="y" />
+			<column name="customer_id" type="integer" mandatory="y" />
+			<index name="pk_appointment" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_appointment_customer" to_schema="soteria-planki_logical" to_table="customer" options="" >
+				<fk_column name="customer_id" pk="id" />
+			</fk>
+			<fk name="fk_appointment_service" to_schema="soteria-planki_logical" to_table="service" options="" >
+				<fk_column name="service_id" pk="id" />
+			</fk>
+		</table>
+		<table name="category" prior="categor" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="varchar" length="256" mandatory="y" />
+			<column name="description" type="varchar" length="512" />
+			<index name="pk_category" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="customer" prior="custom" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="date_created" type="date" mandatory="y" />
+			<column name="name" type="varchar" length="256" mandatory="y" />
+			<column name="email" type="varchar" length="256" />
+			<column name="phone_number" type="varchar" length="256" />
+			<index name="pk_customer" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+		</table>
+		<table name="service" prior="ser" >
+			<column name="id" type="integer" mandatory="y" />
+			<column name="name" type="varchar" length="256" mandatory="y" />
+			<column name="desctiption" type="varchar" length="512" />
+			<column name="category_id" type="integer" mandatory="y" />
+			<index name="pk_service" unique="PRIMARY_KEY" >
+				<column name="id" />
+			</index>
+			<fk name="fk_service_category" to_schema="soteria-planki_logical" to_table="category" options="" >
+				<fk_column name="category_id" pk="id" />
+			</fk>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="c13df27b-6df8-4731-abd7-344727594503" >
+		<diagram name="Default Diagram" id="1968d0bd-f8f0-4b35-a36f-3639858ec926" confirmed="y" show_relation="columns" >
+			<entity schema="soteria-planki_logical" name="appointment" color="C1D8EE" x="1159" y="380" />
+			<entity schema="soteria-planki_logical" name="category" color="C1D8EE" x="532" y="190" />
+			<entity schema="soteria-planki_logical" name="customer" color="C1D8EE" x="817" y="570" />
+			<entity schema="soteria-planki_logical" name="service" color="C1D8EE" x="817" y="342" />
+			<callout x="57" y="57" pointer="Round" >
+				<comment><![CDATA[- Create new entities by right-clicking the diagram. 
+- Double-click entity headers to edit.
+- Get a better understanding of the schema by creating multiple diagrams.
+- Convert the logical design to physical design and deploy it into the database.]]></comment>
+			</callout>
+		</diagram>
+	</diagram_group>
+</project>

@@ -74,14 +74,14 @@ CREATE TABLE assembly (
  );
 
 ---------------------------------------------------
----                assembly_tag                 ---
+---                junc_assembly_tag                 ---
 ---------------------------------------------------
-CREATE TABLE assembly_tag ( 
-	id                   INT     ,
-	id_001               INT     ,
-	CONSTRAINT pk_assembly_tag UNIQUE ( id, id_001 ),
-	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
-	FOREIGN KEY ( id_001 ) REFERENCES assembly( id )  
+CREATE TABLE junc_assembly_tag ( 
+	tag_id                   INT     ,
+	assembly_id               INT     ,
+	CONSTRAINT pk_assembly_tag UNIQUE ( tag_id, assembly_id ),
+	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  
  );
 
 ---------------------------------------------------
@@ -102,14 +102,14 @@ CREATE TABLE labour (
  );
 
 ---------------------------------------------------
----                 labour_tag                  ---
+---                 junc_labour_tag                  ---
 ---------------------------------------------------
-CREATE TABLE labour_tag ( 
-	id                   INT     ,
-	id_001               INT     ,
-	CONSTRAINT pk_labour_tag UNIQUE ( id, id_001 ),
-	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
-	FOREIGN KEY ( id_001 ) REFERENCES labour( id )  
+CREATE TABLE junc_labour_tag ( 
+	tag_id                   INT     ,
+	labour_id               INT     ,
+	CONSTRAINT pk_labour_tag UNIQUE ( tag_id, id_001 ),
+	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  
  );
 
 ---------------------------------------------------
@@ -162,25 +162,25 @@ CREATE TABLE box (
  );
 
 ---------------------------------------------------
----                   box_tag                   ---
+---                   junc_box_tag                   ---
 ---------------------------------------------------
-CREATE TABLE box_tag ( 
-	id                   INT     ,
-	id_001               INT     ,
-	CONSTRAINT pk_box_tag UNIQUE ( id, id_001 ),
-	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
-	FOREIGN KEY ( id_001 ) REFERENCES box( id )  
+CREATE TABLE junc_box_tag ( 
+	tag_id                   INT     ,
+	box_id               INT     ,
+	CONSTRAINT pk_box_tag UNIQUE ( tag_id, box_id ),
+	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( box_id ) REFERENCES box( id )  
  );
 
 ---------------------------------------------------
----                  item_tag                   ---
+---                  junc_item_tag                   ---
 ---------------------------------------------------
-CREATE TABLE item_tag ( 
-	id                   INT     ,
-	id_001               INT     ,
-	CONSTRAINT pk_item_tag UNIQUE ( id, id_001 ),
-	FOREIGN KEY ( id ) REFERENCES tag( id )  ,
-	FOREIGN KEY ( id_001 ) REFERENCES item( id )  
+CREATE TABLE junc_item_tag ( 
+	tag_id                   INT     ,
+	item_id               INT     ,
+	CONSTRAINT pk_item_tag UNIQUE ( tag_id, item_id ),
+	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )  
  );
 
 ---------------------------------------------------
@@ -290,4 +290,3 @@ CREATE TABLE service_order (
 	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
 	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  
  );
-

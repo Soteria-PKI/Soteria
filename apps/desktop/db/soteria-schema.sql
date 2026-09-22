@@ -68,7 +68,6 @@ CREATE TABLE assembly (
 	price                DECIMAL(256)     ,
 	discount_id          INT     ,
 	tax_class_id         INT     ,
-	tag_id               INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
  );
@@ -96,7 +95,6 @@ CREATE TABLE labour (
 	duration             INT     ,
 	discount_id          INT     ,
 	tax_class_id         INT NOT NULL    ,
-	tag_id               INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
  );
@@ -107,7 +105,7 @@ CREATE TABLE labour (
 CREATE TABLE junc_labour_tag ( 
 	tag_id                   INT     ,
 	labour_id               INT     ,
-	CONSTRAINT pk_labour_tag UNIQUE ( tag_id, id_001 ),
+	CONSTRAINT pk_labour_tag UNIQUE ( tag_id, labour_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
 	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  
  );
@@ -133,7 +131,6 @@ CREATE TABLE item (
 	discount_id          INT     ,
 	tax_class_id         INT NOT NULL    ,
 	vendor_id            INT     ,
-	tag_id               INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
 	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
@@ -154,7 +151,6 @@ CREATE TABLE box (
 	discount_id          INT     ,
 	tax_class_id         INT NOT NULL    ,
 	vendor_id            INT     ,
-	tag_id               INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
 	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  ,
@@ -233,7 +229,7 @@ CREATE TABLE sale (
 	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
 	FOREIGN KEY ( box_id ) REFERENCES box( id )  ,
 	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  ,
-	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  
+	foreign key ( service_order_id ) references service_order( id )  
  );
 
 ---------------------------------------------------

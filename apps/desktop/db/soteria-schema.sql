@@ -285,3 +285,10 @@ CREATE TABLE IF NOT EXISTS  service_order (
 	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
 	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  
  );
+
+CREATE TABLE IF NOT EXISTS database_version (
+
+    version INT NOT NULL
+);
+
+

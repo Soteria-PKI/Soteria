@@ -5,6 +5,7 @@
     "npm:@commitlint/cli@21": "21.2.2_@types+node@24.13.3_typescript@6.0.3",
     "npm:@commitlint/config-conventional@21": "21.2.2",
     "npm:@sveltejs/adapter-static@^3.0.10": "3.0.10_@sveltejs+kit@2.70.3_@sveltejs+vite-plugin-svelte@7.3.0_@types+node@24.13.3_svelte@5.57.0_typescript@6.0.3_vite@8.2.2",
+    "npm:@sveltejs/kit@*": "2.70.3_@sveltejs+vite-plugin-svelte@7.3.0_svelte@5.57.0_typescript@6.0.3_vite@8.2.2_@types+node@24.13.3",
     "npm:@sveltejs/kit@^2.65.1": "2.70.3_@sveltejs+vite-plugin-svelte@7.3.0_svelte@5.57.0_typescript@6.0.3_vite@8.2.2_@types+node@24.13.3",
     "npm:@sveltejs/vite-plugin-svelte@^7.1.2": "7.3.0_svelte@5.57.0_vite@8.2.2_@types+node@24.13.3",
     "npm:@sveltejs/vite-plugin-svelte@^7.3.0": "7.3.0_svelte@5.57.0_vite@8.2.2_@types+node@24.13.3",
@@ -13,8 +14,10 @@
     "npm:@tauri-apps/plugin-opener@2": "2.5.5",
     "npm:@tsconfig/svelte@^5.0.8": "5.0.8",
     "npm:@types/node@^24.13.3": "24.13.3",
+    "npm:svelte-check@*": "4.7.6_svelte@5.57.0_typescript@6.0.3",
     "npm:svelte-check@^4.6.0": "4.7.6_svelte@5.57.0_typescript@6.0.3",
     "npm:svelte-check@^4.7.6": "4.7.6_svelte@5.57.0_typescript@6.0.3",
+    "npm:svelte-kit@*": "1.2.0",
     "npm:svelte@^5.56.10": "5.57.0",
     "npm:svelte@^5.56.3": "5.57.0",
     "npm:typescript@~6.0.2": "6.0.3",
@@ -884,6 +887,10 @@
         "typescript"
       ],
       "bin": true
+    },
+    "svelte-kit@1.2.0": {
+      "integrity": "sha512-RRaOHBhpDv4g2v9tcq8iNw055Pt0MlLps6JVA7/40f4KAbtztXSI4T6MZYbHRirO708urfAAMx6Qow+tQfCHug==",
+      "scripts": true
     },
     "svelte@5.57.0": {
       "integrity": "sha512-NdbDn7fl4be1ViUG0oq/lvG6OZy3oENolV2ONjiqqsfVoeAfzaQAKUcEX3MrQod/Bebv1PgwET9rfXhgn9s4Kg==",

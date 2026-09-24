@@ -5,9 +5,9 @@
     "dev": "deno run -A npm:vite dev",
     "build": "deno run -A npm:vite build",
     "preview": "deno run -A npm:vite preview",
-    "prepare": "deno run -A npm:svelte-kit sync || echo ''",
-    "check": "deno run -A npm:svelte-kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "deno run -A npm:svelte-kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json --watch",
+    "prepare": "deno run -A npm:@sveltejs/kit sync || echo ''",
+    "check": "deno run -A npm:@sveltejs/kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "deno run -A npm:@sveltejs/kit sync && deno run -A npm:svelte-check --tsconfig ./tsconfig.json --watch",
     "tauri": "deno run -A npm:@tauri-apps/cli"
   },
   "imports": {

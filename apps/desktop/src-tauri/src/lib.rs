@@ -1,29 +1,47 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use rusqlite::{Connection, Result};
-use std::fs;
+use rusqlite::{Connection, Result, Row};
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-    let _ = database_connection();
+  let _ = database_connection();
   format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
 #[tauri::command]
-fn database_connection() -> Result<()>{
+fn test_select() {
+  match execute_select() {
+    Ok(row) => (),
+    Err(err) => eprintln!("{:?}", err),
+  }
+}
+
+fn execute_select() -> Result<()> {
+  let conn = Connection::open("soteria-db")?;
+  let _ = conn.query_row("SELECT version FROM database_version", [], |row| {
+    println!("{:#?}", row);
+    println!("{}", Row::get_unwrap::<usize,u32>(row,1));
+    Ok(())
+  })?;
+
+  Ok(())
+}
+
+#[tauri::command]
+fn database_connection() -> Result<()> {
   const SCHEMA: &str = include_str!("../../db/soteria-schema.sql");
+  const TEST_DATA: &str = include_str!("../../db/data_test.sql");
 
   let conn = Connection::open("soteria-db")?;
   conn.execute_batch(SCHEMA)?;
-  let test_query = "SELECT * FROM TAG";
-  let _ = conn.execute( &test_query, ());
-    Ok(())
+  conn.execute_batch(TEST_DATA)?;
+  Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
-    .invoke_handler(tauri::generate_handler![greet])
+    .invoke_handler(tauri::generate_handler![greet, test_select])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

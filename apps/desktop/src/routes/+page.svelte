@@ -9,6 +9,11 @@
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     greetMsg = await invoke("greet", { name });
   }
+
+  async function test_select(event: Event){
+    event.preventDefault();
+    await invoke("test_select");
+  }
 </script>
 
 <main class="container">
@@ -32,6 +37,9 @@
     <button type="submit">Greet</button>
   </form>
   <p>{greetMsg}</p>
+  <form class="row" onsubmit={test_select}>
+    <button type="submit">test query</button>
+  </form>
 </main>
 
 <style>

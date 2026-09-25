@@ -2,6 +2,7 @@
 ---                  category                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS category ( 
+    id INT NOT NULL PRIMARY KEY,
 	name                 TEXT NOT NULL    ,
 	description          TEXT     
  );
@@ -287,8 +288,7 @@ CREATE TABLE IF NOT EXISTS  service_order (
  );
 
 CREATE TABLE IF NOT EXISTS database_version (
-
     version INT NOT NULL
 );
 
-
+INSERT INTO database_version (version) VALUES (1);

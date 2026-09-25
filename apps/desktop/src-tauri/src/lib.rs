@@ -1,7 +1,7 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-mod crud_tax_class;
 use rusqlite::{Connection, Result, Row};
-
+mod crud_tax_class;
+use crud_tax_class::command_select_tax_class;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -21,7 +21,7 @@ fn execute_select() -> Result<()> {
   let conn = Connection::open("soteria-db")?;
   let _ = conn.query_row("SELECT version FROM database_version", [], |row| {
     println!("{:#?}", row);
-    println!("{}", Row::get_unwrap::<usize,u32>(row,1));
+    println!("{}", Row::get_unwrap::<usize,u32>(row,0));
     Ok(())
   })?;
 
@@ -43,7 +43,7 @@ fn database_connection() -> Result<()> {
 pub fn run() {
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
-    .invoke_handler(tauri::generate_handler![greet, test_select, crud_tax_class::select_tax_class])
+    .invoke_handler(tauri::generate_handler![greet, test_select, command_select_tax_class])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS  tag (
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  tax_class ( 
 	id                   INT NOT NULL  PRIMARY KEY  ,
-	type                 TEXT NOT NULL    ,
+	class                 TEXT NOT NULL    ,
 	amount               DECIMAL(16) NOT NULL    
  );
 

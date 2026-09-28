@@ -2,7 +2,7 @@
 ---                  category                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS category ( 
-    id INT NOT NULL PRIMARY KEY,
+    id INTEGERPRIMARY KEY,
 	name                 TEXT NOT NULL    ,
 	description          TEXT     
  );
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS category (
 ---                  customer                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  customer ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	date_created         DATE NOT NULL    ,
 	name                 TEXT NOT NULL    ,
 	email                TEXT     ,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS  customer (
 ---                  discount                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  discount ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	discount_type        TEXT     ,
 	amount               INT     
  );
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS  discount (
 ---                  employee                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  employee ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	employee_number      TEXT NOT NULL    ,
 	name                 TEXT NOT NULL    ,
 	date_created         DATE NOT NULL    ,
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS  employee (
 ---                     tag                     ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  tag ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	name                 TEXT     
  );
 
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS  tag (
 ---                  tax_class                  ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  tax_class ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	class                 TEXT NOT NULL    ,
 	amount               DECIMAL(16) NOT NULL    
  );
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS  tax_class (
 ---                  assembly                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  assembly ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	sku                  TEXT     ,
 	name                 TEXT NOT NULL    ,
 	cost                 DECIMAL(255)     ,
@@ -87,14 +87,14 @@ CREATE TABLE IF NOT EXISTS  junc_assembly_tag (
 ---                   labour                    ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  labour ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	sku                  TEXT     ,
 	name                 TEXT NOT NULL    ,
 	cost                 DECIMAL(255)     ,
 	price                DECIMAL(256)     ,
 	duration             INT     ,
 	discount_id          INT     ,
-	tax_class_id         INT NOT NULL    ,
+	tax_class_id         INTEGER   ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( tax_class_id ) REFERENCES tax_class( id )  
  );
@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS  junc_labour_tag (
 ---                   vendor                    ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  vendor ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	name                 TEXT NOT NULL    
  );
 
@@ -122,14 +122,14 @@ CREATE TABLE IF NOT EXISTS  vendor (
 ---                    item                     ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  item ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	sku                  TEXT     ,
 	name                 TEXT NOT NULL    ,
 	cost                 DECIMAL(255)     ,
 	price                DECIMAL(256)     ,
 	quantity             INT     ,
 	discount_id          INT     ,
-	tax_class_id         INT NOT NULL    ,
+	tax_class_id         INTEGER   ,
 	vendor_id            INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
@@ -140,16 +140,16 @@ CREATE TABLE IF NOT EXISTS  item (
 ---                     box                     ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  box ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	sku                  TEXT     ,
 	name                 TEXT NOT NULL    ,
 	cost                 DECIMAL(255)     ,
 	price                DECIMAL(256)     ,
 	quantity             INT     ,
-	contained_item_id    INT NOT NULL    ,
+	contained_item_id    INTEGER   ,
 	contained_quantity   INT     ,
 	discount_id          INT     ,
-	tax_class_id         INT NOT NULL    ,
+	tax_class_id         INTEGER   ,
 	vendor_id            INT     ,
 	FOREIGN KEY ( discount_id ) REFERENCES discount( id )  ,
 	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
@@ -183,9 +183,9 @@ CREATE TABLE IF NOT EXISTS  junc_item_tag (
 ---             junc_assembly_item              ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  junc_assembly_item ( 
-	assembly_id          INT NOT NULL    ,
-	item_id              INT NOT NULL    ,
-	quantity             INT NOT NULL    ,
+	assembly_id          INTEGER   ,
+	item_id              INTEGER   ,
+	quantity             INTEGER   ,
 	CONSTRAINT pk_junc_assembly_item PRIMARY KEY ( assembly_id, item_id ),
 	FOREIGN KEY ( assembly_id ) REFERENCES assembly( id )  ,
 	FOREIGN KEY ( item_id ) REFERENCES item( id )  
@@ -195,10 +195,10 @@ CREATE TABLE IF NOT EXISTS  junc_assembly_item (
 ---               purchase_order                ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  purchase_order ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	order_id             TEXT NOT NULL    ,
 	name                 TEXT NOT NULL    ,
-	vendor_id            INT NOT NULL    ,
+	vendor_id            INTEGER   ,
 	order_date           DATE NOT NULL    ,
 	arrival_date         DATE     ,
 	status               TEXT     ,
@@ -213,10 +213,10 @@ CREATE TABLE IF NOT EXISTS  purchase_order (
 ---                    sale                     ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  sale ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	timestamp            DATETIME NOT NULL    ,
-	customer_id          INT NOT NULL    ,
-	employee_id          INT NOT NULL    ,
+	customer_id          INTEGER   ,
+	employee_id          INTEGER   ,
 	discount_id          INT     ,
 	box_id               INT     ,
 	item_id              INT     ,
@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS  sale (
 ---                   service                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  service ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	name                 TEXT NOT NULL    ,
 	description          TEXT     ,
 	category_id          INT     ,
@@ -255,13 +255,13 @@ CREATE TABLE IF NOT EXISTS  service (
 ---                 appointment                 ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  appointment ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
-	appointment_number   INT NOT NULL    ,
+	id                   INTEGER PRIMARY KEY  ,
+	appointment_number   INTEGER   ,
 	date_taken           DATE NOT NULL    ,
 	date_occurring       DATE NOT NULL    ,
 	approved             NUMERIC NOT NULL DEFAULT FALSE   ,
-	service_id           INT NOT NULL    ,
-	customer_id          INT NOT NULL    ,
+	service_id           INTEGER   ,
+	customer_id          INTEGER   ,
 	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  ,
 	FOREIGN KEY ( service_id ) REFERENCES service( id )  
  );
@@ -270,11 +270,11 @@ CREATE TABLE IF NOT EXISTS  appointment (
 ---                service_order                ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  service_order ( 
-	id                   INT NOT NULL  PRIMARY KEY  ,
+	id                   INTEGER PRIMARY KEY  ,
 	date_created         DATE NOT NULL    ,
 	date_due             DATE     ,
-	employee_id          INT NOT NULL    ,
-	customer_id          INT NOT NULL    ,
+	employee_id          INTEGER   ,
+	customer_id          INTEGER   ,
 	notes_receipt        TEXT     ,
 	notes_internal       TEXT     ,
 	item_id              INT     ,

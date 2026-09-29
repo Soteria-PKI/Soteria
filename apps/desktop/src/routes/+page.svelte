@@ -42,10 +42,13 @@
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
     <button type="submit">Greet</button>
   </form>
+
   <p>{greetMsg}</p>
+
   <form class="row" onsubmit={test_select}>
     <button type="submit">test query</button>
   </form>
+
   <form class="row" onsubmit={select_tax_class}>
     <button type="submit">test query</button>
   </form>

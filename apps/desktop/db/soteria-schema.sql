@@ -2,7 +2,7 @@
 ---                  category                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS category ( 
-    id INTEGERPRIMARY KEY,
+    id INTEGER PRIMARY KEY,
 	name                 TEXT NOT NULL    ,
 	description          TEXT     
  );

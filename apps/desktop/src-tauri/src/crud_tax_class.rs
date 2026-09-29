@@ -9,10 +9,12 @@
 
   #[tauri::command]
   pub fn command_select_tax_class() {
+      dbg!("command_select_tax_class called");
         let _ = select_tax_class();
   }
 
   fn select_tax_class() -> Result<()> {
+      dbg!("in command_select_tax_class");
     let conn = Connection::open("soteria-db")?;
     let query = "SELECT * from TAX_CLASS";
     let mut stmt = conn.prepare(query)?;

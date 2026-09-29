@@ -5,7 +5,6 @@ use crud_tax_class::command_select_tax_class;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-  let _ = database_connection();
   format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
@@ -19,9 +18,9 @@ fn test_select() {
 
 fn execute_select() -> Result<()> {
   let conn = Connection::open("soteria-db")?;
-  let _ = conn.query_row("SELECT version FROM database_version", [], |row| {
+  _ = conn.query_row("SELECT version FROM database_version", [], |row| {
     println!("{:#?}", row);
-    println!("{}", Row::get_unwrap::<usize,u32>(row,0));
+    println!("{}", Row::get_unwrap::<usize, u32>(row, 0));
     Ok(())
   })?;
 
@@ -35,15 +34,24 @@ fn database_connection() -> Result<()> {
 
   let conn = Connection::open("soteria-db")?;
   conn.execute_batch(SCHEMA)?;
-  conn.execute_batch(TEST_DATA)?;
+  match conn.execute_batch(TEST_DATA) {
+    Ok(row) => (),
+    Err(err) => eprintln!("{:?}", err),
+  }
+
   Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+  let _ = database_connection();
   tauri::Builder::default()
     .plugin(tauri_plugin_opener::init())
-    .invoke_handler(tauri::generate_handler![greet, test_select, command_select_tax_class])
+    .invoke_handler(tauri::generate_handler![
+      greet,
+      test_select,
+      command_select_tax_class
+    ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

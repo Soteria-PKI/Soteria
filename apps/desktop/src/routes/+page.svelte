@@ -3,28 +3,23 @@
 
   let name = $state("");
   let greetMsg = $state("");
-  let id = $state(0);
-  let sku = $state("");
-  let cost = 0.0;
-  let price = 0.0;
-  let quantity = 0;
-  let tax_class_id = 0;
 
-  
-  async function insert_item(event: Event) {
+  async function greet(event: Event) {
     event.preventDefault();
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    console.log("svelte");
-    await invoke("insert_item", { sku :"test",name :"name",cost:1,price:1,quantity:1,discount_id:1,tax_class_id:1,vendor_id:1 });
-    //await invoke("insert_item", { sku,name,cost,price,quantity,discount_id:null,tax_class_id:tax_class_id,vendor_id:null });
+    greetMsg = await invoke("greet", { name });
   }
-  async function show_all_items(event: Event) {
+
+  async function test_select(event: Event){
     event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    await invoke("select_all_items");
-    
-    
+    await invoke("test_select");
   }
+
+  async function select_tax_class(event: Event){
+    event.preventDefault();
+    await invoke("command_select_tax_class");
+  }
+
 </script>
 
 <main class="container">
@@ -43,18 +38,20 @@
   </div>
   <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
 
-  
-  <form class="row" onsubmit={insert_item}>
-    <input id="sku-input" placeholder="Enter a sku..." bind:value={sku} />
-    <input id="name-input" placeholder="Enter a name..." bind:value={name} />
-    <input type="number" placeholder="Enter a cost..." bind:value={cost}/>
-    <input type="number" placeholder="Enter a price..." bind:value={price} />
-    <input type="number" placeholder="Enter a quantity..." bind:value={quantity} />
-    <input type="number" placeholder="Enter a tax_class..." bind:value={tax_class_id} />
-    <button type="submit">Insert</button>
+  <form class="row" onsubmit={greet}>
+    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
+    <button type="submit">Greet</button>
   </form>
-  
-  <button type="button" onclick={show_all_items}>Show all items</button>
+
+  <p>{greetMsg}</p>
+
+  <form class="row" onsubmit={test_select}>
+    <button type="submit">test query</button>
+  </form>
+
+  <form class="row" onsubmit={select_tax_class}>
+    <button type="submit">test query</button>
+  </form>
 </main>
 
 <style>

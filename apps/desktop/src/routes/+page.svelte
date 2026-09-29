@@ -9,6 +9,17 @@
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
     greetMsg = await invoke("greet", { name });
   }
+
+  async function test_select(event: Event){
+    event.preventDefault();
+    await invoke("test_select");
+  }
+
+  async function select_tax_class(event: Event){
+    event.preventDefault();
+    await invoke("command_select_tax_class");
+  }
+
 </script>
 
 <main class="container">
@@ -31,7 +42,16 @@
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
     <button type="submit">Greet</button>
   </form>
+
   <p>{greetMsg}</p>
+
+  <form class="row" onsubmit={test_select}>
+    <button type="submit">test query</button>
+  </form>
+
+  <form class="row" onsubmit={select_tax_class}>
+    <button type="submit">test query</button>
+  </form>
 </main>
 
 <style>

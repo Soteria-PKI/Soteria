@@ -1,52 +1,37 @@
-use rusqlite::{Connection, Result, Row, Statement};
+use rusqlite::{Connection, Error, Row, Statement};
 
 #[derive(Debug, serde::Serialize)]
-struct TaxClass {
+pub struct TaxClass {
   id: u32,
   class: String,
   amount: u32,
 }
 
 #[tauri::command]
-pub fn create_tax_class(class: String, amount: u32) -> Result<i64, String> {
+pub fn create_tax_class(tax_class: String, amount: u32) -> Result<i64, String> {
   let conn = Connection::open("soteria-db").map_err(|e| e.to_string())?;
-  conn
-    .execute(
-      "INSERT INTO TAX_CLASS (class, amount) VALUES (?1, ?2);",
-      (&class, &amount),
-    )
-    .map_err(|e| e.to_string());
+  conn.execute(
+    "INSERT INTO TAX_CLASS (class, amount) VALUES (?1, ?2);",
+    (&tax_class, &amount),
+  );
   Ok(conn.last_insert_rowid())
 }
 
 #[tauri::command]
-pub fn command_select_tax_class() {
-  dbg!("command_select_tax_class called");
-  let _ = select_tax_class();
+pub fn select_tax_class(id: u32) -> Result<TaxClass, String> {
+  let conn = Connection::open("soteria-db").map_err(|e| e.to_string())?;
+  let query = "SELECT * from TAX_CLASS WHERE id = ?1";
+conn.query_one(query, [&id],|row| row.get(0));
+
+    Ok(TaxClass{})
 }
 
-fn select_tax_class() -> Result<()> {
-  dbg!("in command_select_tax_class");
-  let conn = Connection::open("soteria-db")?;
-  let query = "SELECT * from TAX_CLASS";
-  let mut stmt = conn.prepare(query)?;
-  let tax_iter = stmt.query_map([], |row| {
-    Ok(TaxClass {
-      id: row.get(0)?,
-      class: row.get(1)?,
-      amount: row.get(2)?,
-    })
-  })?;
-  for class in tax_iter {
-    println!("{:?}", class);
-  }
+    
 
-  Ok(())
 }
 
-//#[tauri::command]
-//pub fn command_update_tax_class() {}
-//fn update_tax_class() -> Result<()>{Ok(())}
+#[tauri::command]
+pub fn update_tax_class() {}
 
 //#[tauri::command]
 //pub fn command_delete_tax_class() {}

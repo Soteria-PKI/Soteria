@@ -1,5 +1,5 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-use rusqlite::{Connection, Result, Row};
+use rusqlite::{Connection, Error, Row};
 mod crud_tax_class;
 use crud_tax_class::command_select_tax_class;
 
@@ -8,37 +8,21 @@ fn greet(name: &str) -> String {
   format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-#[tauri::command]
-fn test_select() {
-  match execute_select() {
-    Ok(row) => (),
-    Err(err) => eprintln!("{:?}", err),
-  }
-}
-
-fn execute_select() -> Result<()> {
-  let conn = Connection::open("soteria-db")?;
-  _ = conn.query_row("SELECT version FROM database_version", [], |row| {
-    println!("{:#?}", row);
-    println!("{}", Row::get_unwrap::<usize, u32>(row, 0));
-    Ok(())
-  })?;
-
-  Ok(())
-}
 
 #[tauri::command]
-fn database_connection() -> Result<()> {
+fn database_connection() -> Result<(), String> {
   const SCHEMA: &str = include_str!("../../db/soteria-schema.sql");
   const TEST_DATA: &str = include_str!("../../db/data_test.sql");
 
-  let conn = Connection::open("soteria-db")?;
-  conn.execute_batch(SCHEMA)?;
-  match conn.execute_batch(TEST_DATA) {
-    Ok(row) => (),
-    Err(err) => eprintln!("{:?}", err),
-  }
+  let conn = Connection::open("soteria-db").map_err(|e| e.to_string())?;
 
+  conn.execute_batch(SCHEMA).map_err(|e| e.to_string())?;
+  match conn.execute("SELECT version FROM sale WHERE id = 1", ()) {
+    Ok(_) => (),
+    Err(_) => {
+      let _ = conn.execute_batch(TEST_DATA);
+    }
+  }
   Ok(())
 }
 
@@ -49,7 +33,6 @@ pub fn run() {
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
       greet,
-      test_select,
       command_select_tax_class
     ])
     .run(tauri::generate_context!())

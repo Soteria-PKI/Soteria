@@ -4,6 +4,7 @@
   let name = $state("");
   let greetMsg = $state("");
 
+
   async function greet(event: Event) {
     event.preventDefault();
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -20,6 +21,27 @@
     await invoke("command_select_tax_class");
   }
 
+  async function select_items(event: Event){
+    event.preventDefault();
+    await invoke("command_select_all_items");
+  }
+  async function select_item1(event: Event){
+    event.preventDefault();
+    await invoke("command_select_item",{id:1});
+  }
+
+  async function insert_item(event: Event){
+    event.preventDefault();
+    await invoke("command_insert_item",{sku:"testSku",name:"testName",cost:9,price:10,quantity:2,discount_id:null,taxClassId:1,vendor_id:null});
+  }
+  async function update_item(event: Event){
+    event.preventDefault();
+    await invoke("command_update_item",{id:1,sku:"testSku",name:"testName",cost:9,price:10,quantity:2,discount_id:null,taxClassId:1,vendor_id:null});
+  }
+  async function delete_item(event: Event){
+    event.preventDefault();
+    await invoke("command_delete_item",{id:6});
+  }
 </script>
 
 <main class="container">
@@ -51,6 +73,22 @@
 
   <form class="row" onsubmit={select_tax_class}>
     <button type="submit">test query</button>
+  </form>
+
+  <form class="row" onsubmit={select_items}>
+    <button type="submit">Select items</button>
+  </form>
+  <form class="row" onsubmit={select_item1}>
+    <button type="submit">Select item (1)</button>
+  </form>
+  <form class="row" onsubmit={insert_item}>
+    <button type="submit">Insert item</button>
+  </form>
+  <form class="row" onsubmit={update_item}>
+    <button type="submit">Update item</button>
+  </form>
+  <form class="row" onsubmit={delete_item}>
+    <button type="submit">Delete item</button>
   </form>
 </main>
 

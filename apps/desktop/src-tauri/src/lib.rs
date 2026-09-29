@@ -2,6 +2,12 @@
 use rusqlite::{Connection, Result, Row};
 mod crud_tax_class;
 use crud_tax_class::command_select_tax_class;
+mod crud_item;
+use crud_item::command_delete_item;
+use crud_item::command_insert_item;
+use crud_item::command_select_all_items;
+use crud_item::command_select_item;
+use crud_item::command_update_item;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -50,7 +56,12 @@ pub fn run() {
     .invoke_handler(tauri::generate_handler![
       greet,
       test_select,
-      command_select_tax_class
+      command_select_tax_class,
+      command_select_all_items,
+      command_select_item,
+      command_insert_item,
+      command_update_item,
+      command_delete_item
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

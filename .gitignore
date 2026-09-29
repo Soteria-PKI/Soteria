@@ -13,3 +13,6 @@ target/
 
 # Node.js
 node_modules/
+
+# DB File
+soteria-db

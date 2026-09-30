@@ -2,7 +2,8 @@ use rusqlite::{Connection, named_params};
 
 // TODO: Read up on how to use ts-rs to make this type visible in typescript
 /// Representation of a Tax Class
-#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize, ts_rs::TS)]
+#[ts(export)]
 pub struct TaxClass {
   id: i64,
   /// A legally defined item category specifying a tax percentage to apply to that item in a sale.
@@ -23,7 +24,7 @@ pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, Stri
     .map_err(|e| e.to_string())?;
 
   let result_id = conn.last_insert_rowid();
-
+ 
   Ok(TaxClass {
     id: result_id,
     class: tax_class,

@@ -18,11 +18,10 @@ jobs:
           fetch-depth: 0
 
       # Install APT packages required applications.
-      - name: "Cache APT Packages"
-        uses: awalsh128/cache-apt-pkgs-action@latest
-        with:
-          packages: libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
-          version: 1.0
+      - name: "Install Linux Dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
 
       # Install Rust Toolchain.
       - name: "Install Rust Toolchain"

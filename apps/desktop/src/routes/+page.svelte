@@ -1,9 +1,20 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
-    import { select_all_tax_class } from "./crud_tax_class.svelte";
+    import {
+        create_tax_class,
+        select_all_tax_class,
+        select_tax_class,
+        update_tax_class,
+        delete_tax_class,
+    } from "./crud_tax_class.svelte";
+    import type { TaxClass } from "../../src-tauri/bindings/TaxClass";
 
     let name = $state("");
     let greetMsg = $state("");
+    let queryResult = $state("");
+    let test_id = $state("");
+    let test_class_name: String = $state("");
+    let test_amount: number = $state(0);
 
     async function greet(event: Event) {
         event.preventDefault();
@@ -11,11 +22,48 @@
         greetMsg = await invoke("greet", { name });
     }
 
-    async function test_select_all(event: Event) {
+    async function test_select_all_tax_class(event: Event) {
         event.preventDefault();
-        const result = await invoke("select_all_tax_class");
+        let result = await select_all_tax_class();
         console.log(result);
     }
+
+    async function test_select_tax_class(event: Event) {
+        event.preventDefault();
+        let result;
+        try {
+            const query_id: number = parseInt(test_id);
+            if (isNaN(query_id)) {
+                throw "no number";
+            }
+            try {
+                result = await select_tax_class(query_id);
+                let tax_class: TaxClass = {
+                    id: result.id,
+                    class: result.class,
+                    amount: result.amount,
+                };
+                queryResult = JSON.stringify(tax_class);
+            } catch (error) {
+                queryResult = String(error);
+            }
+        } catch (err) {
+            queryResult = "Please input a whole number";
+        }
+        console.log(result);
+    }
+
+    async function test_create_tax_class(event: Event) {
+        event.preventDefault();
+        const result = create_tax_class(test_class_name, test_amount);
+        console.log(result);
+    }
+
+    //    async function test_update_tax_class(event: Event) {
+    //event.preventDefault();
+    //const result = update_tax_class(test_id, test_class_name, test_amount);
+    //console.log(result);
+    //}
 </script>
 
 <main class="container">
@@ -48,9 +96,19 @@
     </form>
 
     <p>{greetMsg}</p>
+    <p>{queryResult}</p>
 
-    <form class="row" onsubmit={test_select_all}>
-        <button type="submit">test query</button>
+    <form class="row" onsubmit={test_select_all_tax_class}>
+        <button type="submit">test select all</button>
+    </form>
+
+    <form class="row" onsubmit={test_select_tax_class}>
+        <input
+            id="test-select-input"
+            placeholder="Enter an id..."
+            bind:value={test_id}
+        />
+        <button type="submit">test select</button>
     </form>
 </main>
 

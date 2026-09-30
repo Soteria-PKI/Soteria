@@ -1,5 +1,6 @@
 <script lang="ts">
     import { invoke } from "@tauri-apps/api/core";
+    import { select_all_tax_class } from "./crud_tax_class.svelte";
 
     let name = $state("");
     let greetMsg = $state("");
@@ -10,14 +11,10 @@
         greetMsg = await invoke("greet", { name });
     }
 
-    async function test_select(event: Event) {
+    async function test_select_all(event: Event) {
         event.preventDefault();
-        await invoke("test_select");
-    }
-
-    async function select_tax_class(event: Event) {
-        event.preventDefault();
-        await invoke("command_select_tax_class");
+        const result = await invoke("select_all_tax_class");
+        console.log(result);
     }
 </script>
 
@@ -52,11 +49,7 @@
 
     <p>{greetMsg}</p>
 
-    <form class="row" onsubmit={test_select}>
-        <button type="submit">test query</button>
-    </form>
-
-    <form class="row" onsubmit={select_tax_class}>
+    <form class="row" onsubmit={test_select_all}>
         <button type="submit">test query</button>
     </form>
 </main>

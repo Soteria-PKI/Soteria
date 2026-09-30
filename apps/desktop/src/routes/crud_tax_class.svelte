@@ -11,7 +11,7 @@
 
     export async function select_tax_class(event: Event, class_id: number) {
         event.preventDefault();
-        let result = await invoke("select_tax_class", { class_id });
+        let result = await invoke("select_tax_class", { id : class_id });
         console.log(result);
     }
     export async function update_tax_class(event: Event, class_id: number) {}

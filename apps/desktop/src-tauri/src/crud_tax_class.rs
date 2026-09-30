@@ -1,7 +1,7 @@
-use rusqlite::Connection;
+use rusqlite::{Connection, named_params};
 
 /// Representation of a Tax Class
-#[derive(Debug, Default,serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct TaxClass {
   id: i64,
   /// A legally defined item category specifying a tax percentage to apply to that item in a sale.
@@ -9,8 +9,6 @@ pub struct TaxClass {
   /// The amount, in percentage, of tax to apply.
   amount: i64,
 }
-
-impl
 
 #[tauri::command]
 pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, String> {
@@ -74,14 +72,48 @@ pub fn select_tax_class(id: i64) -> Result<TaxClass, String> {
 }
 
 #[tauri::command]
-pub fn update_tax_class(id: i64, tax_class: String, amount: i64) -> Result<TaxClass, String>{
+pub fn update_tax_class(
+  new_class: TaxClass,
+  id: i64,
+  tax_class: Option<String>,
+  amount: Option<i64>,
+) -> Result<TaxClass, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
-  let query = "";
-    let mut stmt = conn.prepare()
 
+  let to_update = select_tax_class(id).map_err(|e| e.to_string())?;
 
-    Err(String::from("poop"))
+  let updated = TaxClass {
+    id,
+    class: match tax_class {
+      Some(class) => class,
+      None => to_update.class,
+    },
+    amount: match amount {
+      Some(amount) => amount,
+      None => to_update.amount,
+    },
+  };
+
+  let query = "UPDATE tax_class set (class, amount) FROM (?2, ?3) WHERE id = ?1";
+  let mut stmt = conn.prepare(query).map_err(|e| e.to_string())?;
+  let mut result_iter = stmt
+    .query_map((updated.id, updated.class, updated.amount), |row| {
+      Ok(TaxClass {
+        id: row.get(0)?,
+        class: row.get(1)?,
+        amount: row.get(2)?,
+      })
+    })
+    .map_err(|e| e.to_string())?;
+
+  let result = result_iter
+    .next()
+    .ok_or_else(|| "Error retrieving tax class from iterator".to_string())?
+    .map_err(|e| e.to_string())?;
+
+  Ok(result)
 }
 
 //#[tauri::command]
-//pub fn command_delete_tax_class() {}
+//pub fn command_delete_tax_class() {
+//}

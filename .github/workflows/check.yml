@@ -14,6 +14,8 @@ jobs:
       # Checkout the repository's code.
       - name: "Checkout code"
         uses: actions/checkout@v7
+        with: 
+          fetch-depth: 0
 
       # Install APT packages required applications.
       - name: "Cache APT Packages"
@@ -27,24 +29,24 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.98.1
-      
+
       # Cache Rust Downloads.
       - name: "Cache Rust Downloads"
         uses: Swatinem/rust-cache@v2.9.2
         with:
           shared-key: "soteria"
-      
+
       # Install moon.
       - name: "Install moon"
         uses: moonrepo/setup-toolchain@v0.6.4
         with:
           auto-install: true
           cache: false
-      
+
       # Setup moon.
       - name: "Setup moon"
         run: "moon setup"
-      
+
       # Run linting.
       - name: "Run tests for Rust code"
         run: "moon run :lint"

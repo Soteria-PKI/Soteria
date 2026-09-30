@@ -1,0 +1,51 @@
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  testing:
+    name: "Check"
+    runs-on: "ubuntu-latest"
+    env:
+      CARGO_INCREMENTAL: 0
+    steps:
+      # Checkout the repository's code.
+      - name: "Checkout code"
+        uses: actions/checkout@v7
+        with: 
+          fetch-depth: 0
+
+      # Install APT packages required applications.
+      - name: "Install Linux Dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev
+
+      # Install Rust Toolchain.
+      - name: "Install Rust Toolchain"
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.98.1
+
+      # Cache Rust Downloads.
+      - name: "Cache Rust Downloads"
+        uses: Swatinem/rust-cache@v2.9.2
+        with:
+          shared-key: "soteria"
+
+      # Install moon.
+      - name: "Install moon"
+        uses: moonrepo/setup-toolchain@v0.6.4
+        with:
+          auto-install: true
+          cache: false
+
+      # Setup moon.
+      - name: "Setup moon"
+        run: "moon setup"
+
+      # Run linting.
+      - name: "Run tests for Rust code"
+        run: "moon run :lint"

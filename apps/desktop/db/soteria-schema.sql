@@ -2,7 +2,7 @@
 ---                  category                   ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS category ( 
-    id INTEGER PRIMARY KEY,
+    id                   INTEGER PRIMARY KEY,
 	name                 TEXT NOT NULL    ,
 	description          TEXT     
  );
@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS  tag (
 ---                  tax_class                  ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  tax_class ( 
-	id                   INTEGER PRIMARY KEY  ,
+	id                    INTEGER PRIMARY KEY  ,
 	class                 TEXT NOT NULL    ,
-	amount               DECIMAL(16) NOT NULL    
+	amount                DECIMAL(16) NOT NULL    
  );
 
 ---------------------------------------------------
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS  assembly (
 ---                junc_assembly_tag                 ---
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  junc_assembly_tag ( 
-	tag_id                   INT     ,
+	tag_id                    INT     ,
 	assembly_id               INT     ,
 	CONSTRAINT pk_assembly_tag UNIQUE ( tag_id, assembly_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS  labour (
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  junc_labour_tag ( 
 	tag_id                   INT     ,
-	labour_id               INT     ,
+	labour_id                INT     ,
 	CONSTRAINT pk_labour_tag UNIQUE ( tag_id, labour_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
 	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  
@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS  box (
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  junc_box_tag ( 
 	tag_id                   INT     ,
-	box_id               INT     ,
+	box_id                   INT     ,
 	CONSTRAINT pk_box_tag UNIQUE ( tag_id, box_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
 	FOREIGN KEY ( box_id ) REFERENCES box( id )  
@@ -173,7 +173,7 @@ CREATE TABLE IF NOT EXISTS  junc_box_tag (
 ---------------------------------------------------
 CREATE TABLE IF NOT EXISTS  junc_item_tag ( 
 	tag_id                   INT     ,
-	item_id               INT     ,
+	item_id                  INT     ,
 	CONSTRAINT pk_item_tag UNIQUE ( tag_id, item_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
 	FOREIGN KEY ( item_id ) REFERENCES item( id )  

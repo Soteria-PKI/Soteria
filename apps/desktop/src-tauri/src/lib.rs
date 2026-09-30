@@ -8,8 +8,6 @@ fn greet(name: &str) -> String {
   format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-
-#[tauri::command]
 fn database_connection() -> Result<(), String> {
   const SCHEMA: &str = include_str!("../../db/soteria-schema.sql");
   const TEST_DATA: &str = include_str!("../../db/data_test.sql");
@@ -33,8 +31,6 @@ pub fn run() {
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
       greet,
-      select_tax_class,
-      create_tax_class
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

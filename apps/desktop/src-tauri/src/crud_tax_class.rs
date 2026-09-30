@@ -1,7 +1,7 @@
 use rusqlite::Connection;
 
 /// Representation of a Tax Class
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Default,serde::Serialize, serde::Deserialize)]
 pub struct TaxClass {
   id: i64,
   /// A legally defined item category specifying a tax percentage to apply to that item in a sale.
@@ -9,6 +9,8 @@ pub struct TaxClass {
   /// The amount, in percentage, of tax to apply.
   amount: i64,
 }
+
+impl
 
 #[tauri::command]
 pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, String> {

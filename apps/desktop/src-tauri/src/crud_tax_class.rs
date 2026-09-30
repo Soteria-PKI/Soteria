@@ -1,5 +1,6 @@
 use rusqlite::{Connection, named_params};
 
+// TODO: Read up on how to use ts-rs to make this type visible in typescript
 /// Representation of a Tax Class
 #[derive(Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct TaxClass {
@@ -73,7 +74,6 @@ pub fn select_tax_class(id: i64) -> Result<TaxClass, String> {
 
 #[tauri::command]
 pub fn update_tax_class(
-  new_class: TaxClass,
   id: i64,
   tax_class: Option<String>,
   amount: Option<i64>,
@@ -114,6 +114,17 @@ pub fn update_tax_class(
   Ok(result)
 }
 
-//#[tauri::command]
-//pub fn command_delete_tax_class() {
-//}
+#[tauri::command]
+pub fn delete_tax_class(id : i64) -> Result<TaxClass, String> {
+  let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
+  let response = conn
+    .query_one("DELETE * FROM tax_class WHERE id = ?1", [&id], |row| {
+      Ok(TaxClass {
+        id: row.get(0)?,
+        class: row.get(1)?,
+        amount: row.get(2)?,
+      })
+    })
+    .map_err(|e| e.to_string())?;
+  Ok(response)
+}

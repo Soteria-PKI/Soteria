@@ -3,6 +3,9 @@ use rusqlite::{Connection, Result, Row};
 mod crud_tax_class;
 use crud_tax_class::command_select_tax_class;
 
+pub(crate) mod app;
+use app::database::appointment::{add_appointment, get_appointments, remove_appointment};
+
 #[tauri::command]
 fn greet(name: &str) -> String {
   format!("Hello, {}! You've been greeted from Rust!", name)
@@ -11,7 +14,7 @@ fn greet(name: &str) -> String {
 #[tauri::command]
 fn test_select() {
   match execute_select() {
-    Ok(row) => (),
+    Ok(_) => (),
     Err(err) => eprintln!("{:?}", err),
   }
 }
@@ -35,7 +38,7 @@ fn database_connection() -> Result<()> {
   let conn = Connection::open("soteria-db")?;
   conn.execute_batch(SCHEMA)?;
   match conn.execute_batch(TEST_DATA) {
-    Ok(row) => (),
+    Ok(_) => (),
     Err(err) => eprintln!("{:?}", err),
   }
 
@@ -50,7 +53,10 @@ pub fn run() {
     .invoke_handler(tauri::generate_handler![
       greet,
       test_select,
-      command_select_tax_class
+      command_select_tax_class,
+      get_appointments,
+      add_appointment,
+      remove_appointment
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

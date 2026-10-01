@@ -4,6 +4,7 @@ use rusqlite::{Connection, named_params};
 /// Representation of a Tax Class
 #[derive(Debug, Default, serde::Serialize, serde::Deserialize, ts_rs::TS)]
 #[ts(export)]
+
 pub struct TaxClass {
   id: i64,
   /// A legally defined item category specifying a tax percentage to apply to that item in a sale.

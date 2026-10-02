@@ -2,7 +2,9 @@
 use rusqlite::Connection;
 mod crud_item;
 mod crud_tax_class;
-use crud_tax_class::{create_tax_class, select_tax_class, select_all_tax_class, update_tax_class,delete_tax_class};
+use crud_tax_class::{
+  create_tax_class, delete_tax_class, select_all_tax_class, select_tax_class, update_tax_class,
+};
 
 #[tauri::command]
 fn greet(name: &str) -> String {

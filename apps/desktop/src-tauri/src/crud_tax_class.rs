@@ -1,4 +1,4 @@
-use rusqlite::{Connection, named_params};
+use rusqlite::{Connection};
 
 // TODO: Read up on how to use ts-rs to make this type visible in typescript
 /// Representation of a Tax Class

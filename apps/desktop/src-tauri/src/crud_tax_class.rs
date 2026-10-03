@@ -1,4 +1,4 @@
-use rusqlite::{Connection, named_params};
+use rusqlite::Connection;
 
 // TODO: Read up on how to use ts-rs to make this type visible in typescript
 /// Representation of a Tax Class
@@ -24,7 +24,7 @@ pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, Stri
     .map_err(|e| e.to_string())?;
 
   let result_id = conn.last_insert_rowid();
- 
+
   Ok(TaxClass {
     id: result_id,
     class: tax_class,
@@ -116,7 +116,7 @@ pub fn update_tax_class(
 }
 
 #[tauri::command]
-pub fn delete_tax_class(id : i64) -> Result<TaxClass, String> {
+pub fn delete_tax_class(id: i64) -> Result<TaxClass, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
   let response = conn
     .query_one("DELETE * FROM tax_class WHERE id = ?1", [&id], |row| {

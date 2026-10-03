@@ -1,3 +1,4 @@
+#![allow(unused, dead_code)]
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use rusqlite::{Connection, Result, params};
 use std::{fs, result};

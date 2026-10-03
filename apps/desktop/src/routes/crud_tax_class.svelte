@@ -32,5 +32,4 @@
         let result = await invoke("delete_tax_class", { id: class_id });
         return result;
     }
-
 </script>

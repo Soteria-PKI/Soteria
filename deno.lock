@@ -10,6 +10,7 @@
     "npm:@sveltejs/vite-plugin-svelte@^7.1.2": "7.3.0_svelte@5.57.0_vite@8.2.2_@types+node@24.13.3",
     "npm:@sveltejs/vite-plugin-svelte@^7.3.0": "7.3.0_svelte@5.57.0_vite@8.2.2_@types+node@24.13.3",
     "npm:@tauri-apps/api@2": "2.11.1",
+    "npm:@tauri-apps/cli@*": "2.11.4",
     "npm:@tauri-apps/cli@2": "2.11.4",
     "npm:@tauri-apps/plugin-opener@2": "2.5.5",
     "npm:@tsconfig/svelte@^5.0.8": "5.0.8",

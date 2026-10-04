@@ -1,3 +1,5 @@
+#![allow(unused)]
+/*
 use rusqlite::Connection;
 
 // TODO: Read up on how to use ts-rs to make this type visible in typescript
@@ -12,7 +14,6 @@ pub struct TaxClass {
   amount: i64,
 }
 
-#[tauri::command]
 pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
 
@@ -32,7 +33,6 @@ pub fn create_tax_class(tax_class: String, amount: i64) -> Result<TaxClass, Stri
   })
 }
 
-#[tauri::command]
 pub fn select_all_tax_class() -> Result<Vec<TaxClass>, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
   let mut stmt = conn
@@ -58,7 +58,6 @@ pub fn select_all_tax_class() -> Result<Vec<TaxClass>, String> {
   Ok(result)
 }
 
-#[tauri::command]
 pub fn select_tax_class(id: i64) -> Result<TaxClass, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
   let response = conn
@@ -73,7 +72,6 @@ pub fn select_tax_class(id: i64) -> Result<TaxClass, String> {
   Ok(response)
 }
 
-#[tauri::command]
 pub fn update_tax_class(
   id: i64,
   tax_class: Option<String>,
@@ -115,7 +113,6 @@ pub fn update_tax_class(
   Ok(result)
 }
 
-#[tauri::command]
 pub fn delete_tax_class(id: i64) -> Result<TaxClass, String> {
   let conn: Connection = Connection::open("soteria-db").map_err(|e| e.to_string())?;
   let response = conn
@@ -128,4 +125,4 @@ pub fn delete_tax_class(id: i64) -> Result<TaxClass, String> {
     })
     .map_err(|e| e.to_string())?;
   Ok(response)
-}
+}*/

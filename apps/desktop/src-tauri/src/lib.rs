@@ -1,12 +1,9 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use rusqlite::Connection;
 mod crud_item;
-mod define_table_crud;
-
+mod crud_tables;
 mod crud_tax_class;
-use crud_tax_class::{
-  create_tax_class, delete_tax_class, select_all_tax_class, select_tax_class, update_tax_class,
-};
+mod define_table_crud;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -36,11 +33,11 @@ pub fn run() {
     .plugin(tauri_plugin_opener::init())
     .invoke_handler(tauri::generate_handler![
       greet,
-      create_tax_class,
-      select_tax_class,
-      select_all_tax_class,
-      update_tax_class,
-      delete_tax_class
+      crud_tables::create_tax_class,
+      crud_tables::read_tax_class,
+      crud_tables::read_one_tax_class,
+      crud_tables::update_tax_class,
+      crud_tables::delete_tax_class
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

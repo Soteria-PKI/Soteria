@@ -6,13 +6,13 @@
        return await invoke<TaxClass>("create_tax_class", {tax_class: tax_class, amount : amount} );
     }
 
-    export async function select_all_tax_class(): Promise<TaxClass> {
-        let result = await invoke<TaxClass>("select_all_tax_class");
+    export async function read_tax_class(): Promise<TaxClass> {
+        let result = await invoke<TaxClass>("read_tax_class");
         return result;
     }
 
-    export async function select_tax_class(class_id: number): Promise<TaxClass> {
-        return await invoke("select_tax_class", { id: class_id });
+    export async function read_one_tax_class(class_id: number): Promise<TaxClass> {
+        return await invoke("read_one_tax_class", { id: class_id });
     }
 
     export async function update_tax_class(

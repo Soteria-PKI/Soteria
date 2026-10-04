@@ -2,8 +2,8 @@
     import { invoke } from "@tauri-apps/api/core";
     import {
         create_tax_class,
-        select_all_tax_class,
-        select_tax_class,
+        read_tax_class,
+        read_one_tax_class,
         update_tax_class,
         delete_tax_class,
     } from "./crud_tax_class.svelte";
@@ -24,7 +24,7 @@
 
     async function test_select_all_tax_class(event: Event) {
         event.preventDefault();
-        let result = await select_all_tax_class();
+        let result = await read_tax_class();
         console.log(result);
     }
 
@@ -37,7 +37,7 @@
                 throw "no number";
             }
             try {
-                result = await select_tax_class(query_id);
+                result = await read_one_tax_class(query_id);
                 let tax_class: TaxClass = {
                     id: result.id,
                     class: result.class,

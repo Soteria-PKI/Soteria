@@ -36,15 +36,16 @@ macro_rules! define_table_crud {
       }
     )+
   ) => {
-    #![allow(unused)]
     use ::rusqlite::{Connection, Error};
     use ::serde::{Serialize, Deserialize};
     use ::pastey::paste;
+    use ::ts_rs::TS;
 
     $(
       $(#[$attr])*
-      #[derive(Debug, Default, Serialize, Deserialize)]
+      #[derive(Debug, Default, Serialize, Deserialize, TS)]
       #[serde(rename_all = "camelCase")]
+      #[ts(export)]
       $v_outer struct $table_name {
         id: i64,
         $(
@@ -58,10 +59,9 @@ macro_rules! define_table_crud {
         pub(crate) fn [<create_ $table_name:snake>]([<$table_name:lower>]: $table_name) -> Result<(), String> {
           err_wrap(|| {
             let connection: Connection = Connection::open("soteria-db")?;
-            let table_name: &str = stringify!([<$table_name: lower>]);
+            let table_name: &str = stringify!([<$table_name: snake>]);
             let $table_name { id: _, $($k,)+ } = [<$table_name:lower>];
 
-            let mut i = 1;
             let mut fields_param = Vec::new();
 
             for i in 0..(stringify!($($k)+).split(" ").count()) {
@@ -86,7 +86,7 @@ macro_rules! define_table_crud {
         pub(crate) fn [<read_ $table_name:snake>]() -> Result<Vec<$table_name>, String> {
           err_wrap(|| {
             let connection: Connection = Connection::open("soteria-db")?;
-            let table_name: &str = stringify!([<$table_name: lower>]);
+            let table_name: &str = stringify!([<$table_name: snake>]);
             let mut conn_stmt = connection.prepare(&format!("SELECT * FROM {}", table_name))?;
 
             let collect_values: Result<Vec<$table_name>, Error> = conn_stmt.query_map([], |v| {
@@ -103,10 +103,25 @@ macro_rules! define_table_crud {
         }
 
         #[tauri::command]
+        pub(crate) fn [<read_one_ $table_name: snake>](id: i64) -> Result<Option<$table_name>, String> {
+          err_wrap(|| {
+            let connection: Connection = Connection::open("soteria-db")?;
+            let table_name: &str = stringify!([<$table_name: snake>]);
+
+            let result = connection.query_one(&format!("SELECT * FROM {} WHERE id = ?1;", table_name), (id,), |v| {
+              let (id, $($k,)+) = v.try_into()?;
+              Ok($table_name { id, $($k,)+ })
+            })?;
+            connection.close().map_err(|(_, v)| v)?;
+             Ok(Some(result))
+          })
+        }
+
+        #[tauri::command]
         pub(crate) fn [<update_ $table_name: snake>](with: $table_name) -> Result<(), String> {
           err_wrap(|| {
             let connection: Connection = Connection::open("soteria-db")?;
-            let table_name: &str = stringify!([<$table_name: lower>]);
+            let table_name: &str = stringify!([<$table_name: snake>]);
             let $table_name { id: _, $($k,)+ } = with;
 
             let mut i = 1;
@@ -127,7 +142,7 @@ macro_rules! define_table_crud {
         pub(crate) fn [<delete_ $table_name: snake>](id: i64) -> Result<(), String> {
           err_wrap(|| {
             let connection: Connection = Connection::open("soteria-db")?;
-            let table_name: &str = stringify!([<$table_name: lower>]);
+            let table_name: &str = stringify!([<$table_name: snake>]);
 
             connection.execute(&format!("DELETE FROM {} WHERE id = ?1;", table_name), (id,))?;
             connection.close().map_err(|(_, v)| v)?;

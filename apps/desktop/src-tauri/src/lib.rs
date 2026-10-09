@@ -1,8 +1,6 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use rusqlite::Connection;
-mod crud_item;
 mod crud_tables;
-mod crud_tax_class;
 mod define_table_crud;
 
 #[tauri::command]

@@ -20,7 +20,7 @@
 /// ## Use
 ///
 /// This macro is used to reduce the boilerplate code for setting up CRUD
-/// operations as well as to allow to easily define operations for newer tables
+/// operations, as well as to allow to easily define operations for newer tables
 /// easier.
 ///
 #[macro_export]
@@ -31,7 +31,7 @@ macro_rules! define_table_crud {
       $v_outer: vis struct $table_name: ident {
         $(
           $(#[$k_comment: meta])*
-          $k: ident: $t: ty
+          $v_inner: vis $k: ident: $t: ty
         ),+$(,)?
       }
     )+
@@ -50,7 +50,7 @@ macro_rules! define_table_crud {
         id: i64,
         $(
           $(#[$k_comment])*
-          pub $k: $t,
+          $v_inner $k: $t,
         )+
       }
 
@@ -76,7 +76,7 @@ macro_rules! define_table_crud {
               fields_param.join(",")
             );
 
-            connection.execute(&command, ($($k),+));
+            connection.execute(&command, ($($k,)+))?;
             connection.close().map_err(|(_, v)| v)?;
             Ok(())
         })
@@ -113,10 +113,11 @@ macro_rules! define_table_crud {
               Ok($table_name { id, $($k,)+ })
             })?;
             connection.close().map_err(|(_, v)| v)?;
-             Ok(Some(result))
+            Ok(Some(result))
           })
         }
 
+        #[allow(unused_assignments)]
         #[tauri::command]
         pub(crate) fn [<update_ $table_name: snake>](with: $table_name) -> Result<(), String> {
           err_wrap(|| {

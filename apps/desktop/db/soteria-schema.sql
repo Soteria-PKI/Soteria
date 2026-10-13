@@ -215,8 +215,8 @@ CREATE TABLE IF NOT EXISTS  purchase_order (
 CREATE TABLE IF NOT EXISTS  sale ( 
 	id                   INTEGER PRIMARY KEY  ,
 	timestamp            DATETIME NOT NULL    ,
-	customer_id          INTEGER   ,
-	employee_id          INTEGER   ,
+	customer_id          INTEGER NOT NULL   ,
+	employee_id          INTEGER NOT NULL   ,
 	discount_id          INT     ,
 	box_id               INT     ,
 	item_id              INT     ,

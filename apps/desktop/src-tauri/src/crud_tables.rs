@@ -1,6 +1,6 @@
 use crate::define_table_crud;
 
-define_table_crud! {
+define_table_crud!{
 
     pub struct Category {
     name: String,

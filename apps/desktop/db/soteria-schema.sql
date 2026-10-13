@@ -137,9 +137,9 @@ CREATE TABLE IF NOT EXISTS  item (
  );
 
 ---------------------------------------------------
----                     box                     ---
+---                     item_box                     ---
 ---------------------------------------------------
-CREATE TABLE IF NOT EXISTS  box ( 
+CREATE TABLE IF NOT EXISTS  item_box ( 
 	id                   INTEGER PRIMARY KEY  ,
 	sku                  TEXT     ,
 	name                 TEXT NOT NULL    ,
@@ -158,14 +158,14 @@ CREATE TABLE IF NOT EXISTS  box (
  );
 
 ---------------------------------------------------
----                   junc_box_tag                   ---
+---                   junc_item_box_tag                   ---
 ---------------------------------------------------
-CREATE TABLE IF NOT EXISTS  junc_box_tag ( 
+CREATE TABLE IF NOT EXISTS  junc_item_box_tag ( 
 	tag_id                   INT     ,
-	box_id                   INT     ,
-	CONSTRAINT pk_box_tag UNIQUE ( tag_id, box_id ),
+	item_box_id                   INT     ,
+	CONSTRAINT pk_item_box_tag UNIQUE ( tag_id, item_box_id ),
 	FOREIGN KEY ( tag_id ) REFERENCES tag( id )  ,
-	FOREIGN KEY ( box_id ) REFERENCES box( id )  
+	FOREIGN KEY ( item_box_id ) REFERENCES item_box( id )  
  );
 
 ---------------------------------------------------
@@ -203,10 +203,10 @@ CREATE TABLE IF NOT EXISTS  purchase_order (
 	arrival_date         DATE     ,
 	status               TEXT     ,
 	item_id              INT     ,
-	box_id               INT     ,
+	item_box_id               INT     ,
 	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
 	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
-	FOREIGN KEY ( box_id ) REFERENCES box( id )  
+	FOREIGN KEY ( item_box_id ) REFERENCES item_box( id )  
  );
 
 ---------------------------------------------------
@@ -215,10 +215,10 @@ CREATE TABLE IF NOT EXISTS  purchase_order (
 CREATE TABLE IF NOT EXISTS  sale ( 
 	id                   INTEGER PRIMARY KEY  ,
 	timestamp            DATETIME NOT NULL    ,
-	customer_id          INTEGER   ,
-	employee_id          INTEGER   ,
+	customer_id          INTEGER NOT NULL   ,
+	employee_id          INTEGER NOT NULL   ,
 	discount_id          INT     ,
-	box_id               INT     ,
+	item_box_id               INT     ,
 	item_id              INT     ,
 	assembly_id          INT     ,
 	labour_id            INT     ,
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS  sale (
 	FOREIGN KEY ( employee_id ) REFERENCES employee( id )  ,
 	FOREIGN KEY ( customer_id ) REFERENCES customer( id )  ,
 	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
-	FOREIGN KEY ( box_id ) REFERENCES box( id )  ,
+	FOREIGN KEY ( item_box_id ) REFERENCES item_box( id )  ,
 	FOREIGN KEY ( labour_id ) REFERENCES labour( id )  ,
 	foreign key ( service_order_id ) references service_order( id )  
  );

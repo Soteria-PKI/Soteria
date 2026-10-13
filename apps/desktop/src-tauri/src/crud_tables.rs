@@ -1,10 +1,10 @@
 use crate::define_table_crud;
 
-define_table_crud!{
+define_table_crud! {
 
     pub struct Category {
-    name: String,
-    description: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
   }
 
   pub struct Customer {
@@ -29,7 +29,7 @@ define_table_crud!{
   }
 
   pub struct Tag {
-    name: Option<String>,
+    name: Option<String>
   }
 
   pub struct TaxClass {
@@ -57,7 +57,7 @@ define_table_crud!{
   }
 
   pub struct Vendor {
-    name: String,
+    name: String
   }
 
   pub struct Item {
@@ -71,7 +71,7 @@ define_table_crud!{
     vendor_id: Option<i64>,
   }
 
-  pub struct Box {
+  pub struct ItemBox {
     sku: Option<String>,
     name: String,
     cost: Option<f64>,

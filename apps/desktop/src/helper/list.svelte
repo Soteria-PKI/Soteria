@@ -2,7 +2,7 @@
   import { invoke } from "@tauri-apps/api/core";
   import { onMount } from "svelte";
 
-
+  
     async function selectFromTable<T>(table_name: string): Promise<T> {
         let query = "pub(crate) fn read_" + table_name.trim().toLowerCase() + "() -> Result<Vec<ServiceOrder>, String> {}";
         let result = await invoke<T>(query);

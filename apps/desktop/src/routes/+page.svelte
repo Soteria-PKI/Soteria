@@ -82,7 +82,7 @@
   </div>
   <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
 
-  <a href="./service_order_list.svelte">go to service</a>
+  <a href="/ServiceOrder">go to service</a>
 
   <form class="row" onsubmit={greet}>
     <input id="greet-input" placeholder="Enter a name..." bind:value={name} />

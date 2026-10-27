@@ -3,8 +3,14 @@
     import type { ServiceOrder } from "$lib/types/ServiceOrder";
     import { invoke } from "@tauri-apps/api/core";
     import { onMount } from "svelte";
+    import type { Serializable } from "child_process";
 
     let items: ServiceOrder[] = $state([]);
+    let Myfilters = {
+        filteredCondition(value: ServiceOrder, index: number, array: Serializable[]): value is ServiceOrder {
+            return value.id == BigInt(1);
+        }
+    }
 
     onMount(async () => {
         try {
@@ -15,4 +21,4 @@
     });
 </script>
 
-<List items = {items}></List>
+<List items = {items} filter = {Myfilters}></List>

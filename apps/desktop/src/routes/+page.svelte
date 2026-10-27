@@ -2,7 +2,6 @@
     import { invoke } from "@tauri-apps/api/core";
 
     let name = $state("");
-
 </script>
 
 <main class="container">
@@ -15,14 +14,8 @@
     </div>
     <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
 
-        <input
-            id="greet-input"
-            placeholder="Enter a name..."
-            bind:value={name}
-        />
-        <button type="submit">Greet</button>
-
-
+    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
+    <button type="submit">Greet</button>
 </main>
 
 <style>

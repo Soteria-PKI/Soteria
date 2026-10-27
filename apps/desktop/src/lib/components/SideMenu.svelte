@@ -1,11 +1,18 @@
 <script lang="ts">
-    let routes = import.meta.glob('../../routes/*/+page.svelte');
+    import { page } from "$app/state";
+    import { appRoutes } from "../routes.js";
+    let collapsed = $state(false);
+    function currentPage(route: string): Boolean {
+        console.log(page.url.pathname);
+        return route === page.url.pathname;
+    }
 </script>
 
 <main>
     <nav class="sidebar sidebar-expanded" aria-label="Main Navigation">
         <div class="sidebar-header">
             <div class="brand-logo">
+                <!-- this is the brand logo -->
                 <div class="brand-icon">
                     <svg
                         viewBox="0 0 24 24"
@@ -32,29 +39,22 @@
         </div>
 
         <ul class="nav-list">
-            <li>
-                <a href="#inventory" class="nav-item active">
-                    <span class="nav-label">Inventory</span>
-                    <span class="nav-badge">142</span>
-                </a>
-            </li>
-            <li>
-                <a href="#purchase-orders" class="nav-item">
-                    <span class="nav-label">Purchase Orders</span>
-                    <span class="nav-badge">18</span>
-                </a>
-            </li>
-            <li>
-                <a href="#service-orders" class="nav-item">
-                    <span class="nav-label">Service Orders</span>
-                    <span class="nav-badge">9</span>
-                </a>
-            </li>
-            <li>
-                <a href="#sale" class="nav-item">
-                    <span class="nav-label">Sale</span>
-                </a>
-            </li>
+            {#each appRoutes as route}
+                <li>
+                    <a
+                        href={route.path}
+                        class={[
+                            "nav-item",
+                            {
+                                "nav-item active": currentPage(route.path),
+                            },
+                        ]}
+                    >
+                        <span class="nav-label">{route.name}</span>
+                        <span class="nav-badge">142</span>
+                    </a>
+                </li>
+            {/each}
         </ul>
 
         <div class="sidebar-footer">

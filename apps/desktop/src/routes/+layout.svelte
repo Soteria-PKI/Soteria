@@ -22,4 +22,9 @@
         margin: 0;
         padding: 0;
     }
+    .container{
+        display: flex;
+        flex-direction: row;
+    }
+    
 </style>

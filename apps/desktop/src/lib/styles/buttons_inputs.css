@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Soteria UI System — Buttons & Inputs Primitives (Vanilla CSS)
+   File: buttons-inputs.css
+   Dependencies: tokens.css
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  border-radius: var(--radius-md, 4px);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: var(--accent-primary, #2563eb);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-hover, #1d4ed8);
+}
+
+.btn-secondary {
+  background-color: var(--surface-subtle, #f1f5f9);
+  color: var(--text-title, #0f172a);
+  border-color: var(--border-color, #e2e8f0);
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-title, #0f172a);
+  border-color: var(--border-color, #e2e8f0);
+}
+
+.btn-outline:hover {
+  background-color: #f8fafc;
+  border-color: var(--border-subtle, #cbd5e1);
+}
+
+.btn-sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+/* Input Fields */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.form-input {
+  height: 36px;
+  padding: 0 12px;
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+  font-size: var(--text-sm, 13px);
+  color: var(--text-title, #0f172a);
+  background-color: #ffffff;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 4px);
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-primary, #2563eb);
+  box-shadow: 0 0 0 2px var(--accent-subtle, #eff6ff);
+}

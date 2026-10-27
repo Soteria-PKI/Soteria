@@ -1,4 +1,11 @@
 <script lang="ts">
+    import "$lib/styles/tokens.css";
+    import "$lib/styles/badges_pills.css";
+    import "$lib/styles/buttons_inputs.css";
+    import "$lib/styles/data_table.css";
+    import "$lib/styles/sidebar_nav.css";
+    import "$lib/styles/tokens.css";
+
     import SideMenu from "$lib/components/SideMenu.svelte";
 
     let { children } = $props();
@@ -18,6 +25,7 @@
         background-color: green;
         padding: 0;
         margin: 0;
+
     }
     .page {
         display: flex;

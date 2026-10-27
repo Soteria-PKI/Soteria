@@ -1,0 +1,293 @@
+/* ==========================================================================
+   Soteria UI System — Service Orders Data Table Module (Vanilla CSS)
+   File: data-table.css
+   Dependencies: tokens.css
+   ========================================================================== */
+
+.data-table-container {
+  background: var(--surface-main, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 6px);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-sans, 'DM Sans', sans-serif);
+}
+
+/* Toolbar & Filter Bar */
+.table-toolbar {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+.search-input-wrapper {
+  min-width: 240px;
+  position: relative;
+}
+
+.table-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px 0 32px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 4px);
+  font-size: var(--text-sm, 13px);
+  color: var(--text-title, #0f172a);
+  background: #f8fafc url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>') no-repeat 10px center;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.table-search-input:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: var(--accent-primary, #2563eb);
+  box-shadow: 0 0 0 2px var(--accent-subtle, #eff6ff);
+}
+
+.status-filter-bar {
+  flex: 1;
+  display: flex;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: var(--radius-md, 4px);
+  gap: 4px;
+}
+
+.filter-btn {
+  flex: 1;
+  height: 30px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-sm, 3px);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+  color: var(--text-title, #0f172a);
+}
+
+.filter-btn.active {
+  background: #ffffff;
+  color: var(--accent-primary, #2563eb);
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.filter-count {
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm, 3px);
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.filter-btn.active .filter-count {
+  background: var(--accent-subtle, #eff6ff);
+  color: var(--accent-primary, #2563eb);
+}
+
+.btn-primary-action {
+  height: 36px;
+  padding: 0 14px;
+  background: var(--accent-primary, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md, 4px);
+  font-size: var(--text-sm, 13px);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.btn-primary-action:hover {
+  background: var(--accent-hover, #1d4ed8);
+}
+
+/* Table Architecture */
+.table-scroll-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--text-sm, 13px);
+  text-align: left;
+}
+
+.data-table thead th {
+  height: var(--table-header-height, 38px);
+  background: #f8fafc;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.data-table tbody tr {
+  height: var(--table-row-height, 48px);
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.12s ease;
+  position: relative;
+}
+
+.data-table tbody td {
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-body, #334155);
+}
+
+/* 3px Status-Coded Indicator Edge on First Cell */
+.data-table tbody tr td:first-child {
+  border-left: 3px solid transparent;
+}
+
+/* Status-Coded Row Background Tints */
+.row-status-progress {
+  background-color: var(--status-in-progress-bg, rgba(37, 99, 235, 0.09));
+}
+.row-status-progress td:first-child {
+  border-left-color: var(--status-in-progress, #2563eb);
+}
+.row-status-progress:hover {
+  background-color: rgba(37, 99, 235, 0.15);
+}
+
+.row-status-critical {
+  background-color: var(--status-critical-bg, rgba(220, 38, 38, 0.10));
+}
+.row-status-critical td:first-child {
+  border-left-color: var(--status-critical, #dc2626);
+}
+.row-status-critical:hover {
+  background-color: rgba(220, 38, 38, 0.16);
+}
+
+.row-status-scheduled {
+  background-color: var(--status-scheduled-bg, rgba(124, 58, 237, 0.09));
+}
+.row-status-scheduled td:first-child {
+  border-left-color: var(--status-scheduled, #7c3aed);
+}
+.row-status-scheduled:hover {
+  background-color: rgba(124, 58, 237, 0.15);
+}
+
+.row-status-completed {
+  background-color: var(--status-completed-bg, rgba(22, 163, 74, 0.09));
+}
+.row-status-completed td:first-child {
+  border-left-color: var(--status-completed, #16a34a);
+}
+.row-status-completed:hover {
+  background-color: rgba(22, 163, 74, 0.15);
+}
+
+.row-status-awaiting {
+  background-color: var(--status-awaiting-bg, rgba(217, 119, 6, 0.10));
+}
+.row-status-awaiting td:first-child {
+  border-left-color: var(--status-awaiting, #d97706);
+}
+.row-status-awaiting:hover {
+  background-color: rgba(217, 119, 6, 0.16);
+}
+
+/* Status-Preserving Saturated Selection State */
+.data-table tbody tr.is-selected td:first-child {
+  border-left-width: 4px;
+}
+
+.row-status-progress.is-selected {
+  background-color: var(--status-in-progress-selected, rgba(37, 99, 235, 0.20)) !important;
+}
+
+.row-status-critical.is-selected {
+  background-color: var(--status-critical-selected, rgba(220, 38, 38, 0.22)) !important;
+}
+
+.row-status-scheduled.is-selected {
+  background-color: var(--status-scheduled-selected, rgba(124, 58, 237, 0.20)) !important;
+}
+
+.row-status-completed.is-selected {
+  background-color: var(--status-completed-selected, rgba(22, 163, 74, 0.20)) !important;
+}
+
+.row-status-awaiting.is-selected {
+  background-color: var(--status-awaiting-selected, rgba(217, 119, 6, 0.22)) !important;
+}
+
+/* Typography & Cell Components */
+.order-link {
+  color: var(--accent-primary, #2563eb);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.order-link:hover {
+  text-decoration: underline;
+}
+
+.cell-primary-text {
+  font-weight: 600;
+  color: var(--text-title, #0f172a);
+}
+
+.cell-sub-text {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+}
+
+.tech-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tech-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm, 3px);
+  background: #e2e8f0;
+  color: var(--text-title, #0f172a);
+}
+
+.btn-row-action {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #64748b);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm, 3px);
+  font-size: 16px;
+}
+
+.btn-row-action:hover {
+  background: #ffffff;
+  color: var(--text-title, #0f172a);
+}

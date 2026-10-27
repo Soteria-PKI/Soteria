@@ -4,5 +4,6 @@
     "@commitlint/cli": "npm:@commitlint/cli@^21.0.0",
     "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.0"
   },
-  "nodeModulesDir": "auto"
+  "nodeModulesDir": "auto",
+  "allowScripts": ["npm:svelte-kit@1.2.0"]
 }

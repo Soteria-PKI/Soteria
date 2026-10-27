@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "soteria",
-        "width": 800,
-        "height": 600
+        "title": "Soteria",
+        "maximized": true,
+        "minWidth": 600,
+        "minHeight": 400
       }
     ],
     "security": {

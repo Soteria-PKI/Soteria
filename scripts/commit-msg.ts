@@ -1,6 +1,6 @@
 const arg1 = Deno.args[0];
 const decoder = new TextDecoder("utf8");
-const jiraRegex = /^[a-z]+(?:([^)]+))?: SS-\d+ /;
+const jiraRegex = /^SS-\d{3,}(-([a-zA-Z])+)*$/;
 
 const decode = (stdout: Uint8Array<ArrayBufferLike>): string => {
   return decoder.decode(stdout);

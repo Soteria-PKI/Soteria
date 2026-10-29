@@ -6,8 +6,6 @@ projects:
   web-backend: "apps/web/backend"
   web-frontend: "apps/web/frontend"
 
-# Configures the version control system (VCS). Also known as
-# source code management (SCM).
 vcs:
   client: git
   # The default branch / base.
@@ -15,10 +13,9 @@ vcs:
   sync: true
   hooks:
     commit-msg:
-      - "deno run --allow-read --allow-sys --allow-run --allow-env npm:@commitlint/cli --edit $ARG1"
+      - "deno run --allow-run --allow-read scripts/commit-msg.ts $ARG1"
+    pre-commit:
+      - "cargo fmt"
+      - "echo \"hi\""
 
-  # The upstream version control provider, where the repository
-  # source code is stored.
-  # @since 1.8.0
-  # @values "bitbucket" | "bitbucket-legacy" | "github" | "gitlab" | "other"
   provider: "github"

@@ -1,8 +1,9 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@commitlint/cli@21": "21.2.4_typescript@6.0.3",
-    "npm:@commitlint/config-conventional@21": "21.2.4",
+    "npm:@commitlint/cli@*": "21.2.4_typescript@6.0.3",
+    "npm:@commitlint/cli@^21.2.4": "21.2.4_typescript@6.0.3",
+    "npm:@commitlint/config-conventional@^21.2.4": "21.2.4",
     "npm:@sveltejs/adapter-static@^3.0.10": "3.0.10_@sveltejs+kit@2.70.3_@sveltejs+vite-plugin-svelte@7.3.1_@types+node@24.19.2_svelte@5.57.2_typescript@6.0.3_vite@8.3.5",
     "npm:@sveltejs/kit@^2.65.1": "2.70.3_@sveltejs+vite-plugin-svelte@7.3.1_svelte@5.57.2_typescript@6.0.3_vite@8.3.5_@types+node@24.19.2",
     "npm:@sveltejs/vite-plugin-svelte@^7.1.2": "7.3.1_svelte@5.57.2_vite@8.3.5_@types+node@24.19.2",
@@ -977,8 +978,8 @@
   },
   "workspace": {
     "dependencies": [
-      "npm:@commitlint/cli@21",
-      "npm:@commitlint/config-conventional@21"
+      "npm:@commitlint/cli@^21.2.4",
+      "npm:@commitlint/config-conventional@^21.2.4"
     ],
     "members": {
       "apps/desktop": {

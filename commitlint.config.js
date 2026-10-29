@@ -1,10 +1,7 @@
 module.exports = {
-  extends: ["@commitlint/config-conventional"],
-
+  extends: ["./commitlint.base.config.js"],
   rules: {
-    "scope-enum": [2, "always", ["desktop", "web-backend", "web-frontend"]],
     "jira-key": [2, "always"],
-    "subject-case": [0],
   },
 
   plugins: [

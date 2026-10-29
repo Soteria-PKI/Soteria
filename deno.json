@@ -1,8 +1,8 @@
 {
   "workspace": ["apps/desktop", "apps/web/frontend"],
   "imports": {
-    "@commitlint/cli": "npm:@commitlint/cli@^21.0.0",
-    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.0.0"
+    "@commitlint/cli": "npm:@commitlint/cli@^21.2.4",
+    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.2.4"
   },
   "nodeModulesDir": "auto",
   "allowScripts": ["npm:svelte-kit@1.2.0"]

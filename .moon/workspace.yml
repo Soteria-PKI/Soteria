@@ -16,6 +16,5 @@ vcs:
       - "deno run --allow-run --allow-read scripts/commit-msg.ts $ARG1"
     pre-commit:
       - "cargo fmt"
-      - "echo \"hi\""
 
   provider: "github"

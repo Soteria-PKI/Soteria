@@ -1,69 +1,73 @@
 {
-  /* Typography */
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --text-xs: 12px;
-  --text-sm: 13px;
-  --text-base: 14px;
-  --text-md: 15px;
-  --text-lg: 18px;
-  --text-xl: 22px;
+	/* Typography */
+	--font-sans:
+		"DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	--text-xs: 12px;
+	--text-sm: 13px;
+	--text-base: 14px;
+	--text-md: 15px;
+	--text-lg: 18px;
+	--text-xl: 22px;
 
-  /* Surfaces & Backgrounds (Light Mode) */
-  --bg-page: #eef2f6;
-  --surface-main: #ffffff;
-  --surface-sidebar: #f8fafc;
-  --surface-subtle: #f1f5f9;
-  --border-color: #e2e8f0;
-  --border-subtle: #cbd5e1;
+	/* Surfaces & Backgrounds (Light Mode) */
+	--bg-page: #eef2f6;
+	--surface-main: #ffffff;
+	--surface-sidebar: #f8fafc;
+	--surface-subtle: #f1f5f9;
+	--border-color: #e2e8f0;
+	--border-subtle: #cbd5e1;
 
-  /* Typography Colors */
-  --text-title: #0f172a;
-  --text-body: #334155;
-  --text-muted: #64748b;
-  --text-on-accent: #ffffff;
+	/* Typography Colors */
+	--text-title: #0f172a;
+	--text-body: #334155;
+	--text-muted: #64748b;
+	--text-on-accent: #ffffff;
 
-  /* Primary Brand Tokens (Cobalt Blue) */
-  --accent-primary: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-active: #1e40af;
-  --accent-subtle: #eff6ff;
-  --accent-border: #bfdbfe;
+	/* Primary Brand Tokens (Cobalt Blue) */
+	--accent-primary: #2563eb;
+	--accent-hover: #1d4ed8;
+	--accent-active: #1e40af;
+	--accent-subtle: #eff6ff;
+	--accent-border: #bfdbfe;
 
-  /* Semantic Status Colors */
-  --status-in-progress: #2563eb;
-  --status-in-progress-bg: rgba(37, 99, 235, 0.09);
-  --status-in-progress-selected: rgba(37, 99, 235, 0.20);
+	/* Semantic Status Colors */
+	--status-in-progress: #2563eb;
+	--status-in-progress-bg: rgba(37, 99, 235, 0.09);
+	--status-in-progress-selected: rgba(37, 99, 235, 0.2);
 
-  --status-critical: #dc2626;
-  --status-critical-bg: rgba(220, 38, 38, 0.10);
-  --status-critical-selected: rgba(220, 38, 38, 0.22);
+	--status-critical: #dc2626;
+	--status-critical-bg: rgba(220, 38, 38, 0.1);
+	--status-critical-selected: rgba(220, 38, 38, 0.22);
 
-  --status-scheduled: #7c3aed;
-  --status-scheduled-bg: rgba(124, 58, 237, 0.09);
-  --status-scheduled-selected: rgba(124, 58, 237, 0.20);
+	--status-scheduled: #7c3aed;
+	--status-scheduled-bg: rgba(124, 58, 237, 0.09);
+	--status-scheduled-selected: rgba(124, 58, 237, 0.2);
 
-  --status-completed: #16a34a;
-  --status-completed-bg: rgba(22, 163, 74, 0.09);
-  --status-completed-selected: rgba(22, 163, 74, 0.20);
+	--status-completed: #16a34a;
+	--status-completed-bg: rgba(22, 163, 74, 0.09);
+	--status-completed-selected: rgba(22, 163, 74, 0.2);
 
-  --status-awaiting: #d97706;
-  --status-awaiting-bg: rgba(217, 119, 6, 0.10);
-  --status-awaiting-selected: rgba(217, 119, 6, 0.22);
+	--status-awaiting: #d97706;
+	--status-awaiting-bg: rgba(217, 119, 6, 0.1);
+	--status-awaiting-selected: rgba(217, 119, 6, 0.22);
 
-  /* Corner Radius Scale */
-  --radius-sm: 3px;   /* Badges & count pills */
-  --radius-md: 4px;   /* Inputs, buttons, controls */
-  --radius-lg: 6px;   /* Panels, cards, tables (Max) */
+	/* Corner Radius Scale */
+	--radius-sm: 3px; /* Badges & count pills */
+	--radius-md: 4px; /* Inputs, buttons, controls */
+	--radius-lg: 6px; /* Panels, cards, tables (Max) */
 
-  /* Elevation & Shadows */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+	/* Elevation & Shadows */
+	--shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+	--shadow-md:
+		0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+	--shadow-lg:
+		0 10px 15px -3px rgba(15, 23, 42, 0.08),
+		0 4px 6px -4px rgba(15, 23, 42, 0.04);
 
-  /* Layout Constants */
-  --sidebar-expanded-width: 240px;
-  --sidebar-collapsed-width: 72px;
-  --header-height: 56px;
-  --table-row-height: 48px;
-  --table-header-height: 38px;
+	/* Layout Constants */
+	--sidebar-expanded-width: 240px;
+	--sidebar-collapsed-width: 72px;
+	--header-height: 56px;
+	--table-row-height: 48px;
+	--table-header-height: 38px;
 }

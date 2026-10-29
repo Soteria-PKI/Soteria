@@ -9,5 +9,4 @@ done
 # https://moonrepo.dev/docs/guides/vcs-hooks
 
 cargo fmt
-cargo check
-cargo clippy
+

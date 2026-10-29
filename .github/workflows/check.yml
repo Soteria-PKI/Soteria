@@ -14,7 +14,7 @@ jobs:
       # Checkout the repository's code.
       - name: "Checkout code"
         uses: actions/checkout@v7
-        with: 
+        with:
           fetch-depth: 0
 
       # Install APT packages required applications.

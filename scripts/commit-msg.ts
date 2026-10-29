@@ -7,7 +7,9 @@ const decode = (stdout: Uint8Array<ArrayBufferLike>): string => {
 };
 
 const getBranch = async () => {
-  const command = new Deno.Command("git", { args: ["branch", "--show-current"] });
+  const command = new Deno.Command("git", {
+    args: ["branch", "--show-current"],
+  });
   const { stdout }: { stdout: Uint8Array } = await command.output();
 
   const branchName = decode(stdout).trim();
@@ -16,12 +18,15 @@ const getBranch = async () => {
 
 const runCommand = async () => {
   const branch = await getBranch();
-  let baseArguments = "run --allow-read --allow-sys --allow-run --allow-env npm:@commitlint/cli ";
+  let baseArguments =
+    "run --allow-read --allow-sys --allow-run --allow-env npm:@commitlint/cli ";
 
   if (jiraRegex.test(branch)) {
     baseArguments = baseArguments.concat(`--edit ${arg1}`);
   } else {
-    baseArguments = baseArguments.concat(`--config commitlint.base.config.js --edit ${arg1}`);
+    baseArguments = baseArguments.concat(
+      `--config commitlint.base.config.js --edit ${arg1}`,
+    );
   }
   const command = new Deno.Command("deno", { args: baseArguments.split(" ") });
   const { success, stdout } = await command.output();

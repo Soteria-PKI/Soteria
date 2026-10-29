@@ -1,8 +1,11 @@
 {
   "workspace": ["apps/desktop", "apps/web/frontend"],
   "imports": {
+    "@biomejs/biome": "npm:@biomejs/biome@^2.6.3",
     "@commitlint/cli": "npm:@commitlint/cli@^21.2.4",
-    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.2.4"
+    "@commitlint/config-conventional": "npm:@commitlint/config-conventional@^21.2.4",
+    "prettier": "npm:prettier@^3.9.10",
+    "prettier-plugin-svelte": "npm:prettier-plugin-svelte@^4.1.1"
   },
   "nodeModulesDir": "auto",
   "allowScripts": ["npm:svelte-kit@1.2.0"]

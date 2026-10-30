@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-import type { TaxClass } from "../../src-tauri/bindings/TaxClass";
+import type { TaxClass } from "../lib/types/TaxClass";
 import { invoke } from "@tauri-apps/api/core";
 
 export async function create_tax_class(tax_class: String, amount: number) {

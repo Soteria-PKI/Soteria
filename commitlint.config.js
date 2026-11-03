@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ["./commitlint.base.config.js"],
+  extends: ["./commitlint.base.config.cjs"],
   rules: {
     "jira-key": [2, "always"],
   },

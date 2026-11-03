@@ -44,8 +44,8 @@ jobs:
 
       # Setup moon.
       - name: "Setup moon"
-        run: "moon setup"
+        run: moon setup
 
       # Run linting.
       - name: "Run tests for Rust code"
-        run: "moon run :lint"
+        run: moon run :lint

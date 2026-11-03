@@ -4,6 +4,7 @@
 # moon
 .moon/cache
 .moon/docker
+.moon/hooks
 
 # Operating-system-specific files
 .DS_Store

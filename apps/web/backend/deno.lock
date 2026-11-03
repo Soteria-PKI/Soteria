@@ -1,7 +1,8 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@biomejs/biome@*": "2.6.3"
+    "npm:@biomejs/biome@*": "2.6.3",
+    "npm:prettier@*": "3.9.10"
   },
   "npm": {
     "@biomejs/biome@2.6.3": {
@@ -69,6 +70,10 @@
       "integrity": "sha512-GhtOPphBWlnCepqpNk/w5eGN5oGRCzL20EbAkL1XCIpyboeVC9R642noyT43l8LSenGS4qz9IL8sKPfwY37V/Q==",
       "os": ["win32"],
       "cpu": ["x64"]
+    },
+    "prettier@3.9.10": {
+      "integrity": "sha512-skGHTH1Yb9QvaTC4hWnRTzEYtCpApF0UMBPz+t/0ZPzP8ihefo/btKd+QA7pUE0fEwA1SbS/NmhyEcstdXOIdA==",
+      "bin": true
     }
   }
 }

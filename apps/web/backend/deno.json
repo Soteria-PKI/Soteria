@@ -1,3 +1,4 @@
 {
-  "name": "soteria-web-backend"
+  "name": "soteria-web-backend",
+  "exports": {}
 }

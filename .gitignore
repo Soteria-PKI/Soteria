@@ -4,6 +4,7 @@
 # moon
 .moon/cache
 .moon/docker
+.moon/hooks
 
 # Operating-system specific files
 .DS_Store
@@ -15,4 +16,4 @@ target/
 node_modules/
 
 # DB File
-soteria-db
+soteria-db.moon/hooks/*

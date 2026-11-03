@@ -14,7 +14,7 @@ jobs:
       # Checkout the repository's code.
       - name: "Checkout code"
         uses: actions/checkout@v7
-        with: 
+        with:
           fetch-depth: 0
 
       # Install APT packages required applications.
@@ -27,7 +27,7 @@ jobs:
       - name: "Install Rust Toolchain"
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.98.1
+          toolchain: 1.99.1
 
       # Cache Rust Downloads.
       - name: "Cache Rust Downloads"

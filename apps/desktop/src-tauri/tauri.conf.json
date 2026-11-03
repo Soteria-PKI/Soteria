@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "soteria",
+  "productName": "Soteria",
   "version": "0.1.0",
   "identifier": "com.pki.soteria",
   "build": {
@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "soteria",
-        "width": 800,
-        "height": 600
+        "title": "Soteria",
+        "maximized": true,
+        "minWidth": 600,
+        "minHeight": 400
       }
     ],
     "security": {
@@ -30,6 +31,7 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "resources": ["../db/*.sql"]
   }
 }

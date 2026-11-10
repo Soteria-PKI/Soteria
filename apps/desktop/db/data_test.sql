@@ -85,7 +85,7 @@ INSERT INTO assembly (id, sku, name, cost, price, discount_id, tax_class_id) VAL
 (5, 'ASM-ENG-002', 'Engine Tune-Up Kit', 90.00, 159.99, NULL, 1);
 
 --------------------------------------------------- -- BOX --------------------------------------------------- 
-INSERT INTO box (id, sku, name, cost, price, quantity, contained_item_id, contained_quantity, discount_id, tax_class_id, vendor_id) VALUES (1, 'BOX-BRK-001', 'Brake Pad 4-Pack', 200.00, 329.99, 5, 1, 4, 1, 1, 1),
+INSERT INTO item_box (id, sku, name, cost, price, quantity, contained_item_id, contained_quantity, discount_id, tax_class_id, vendor_id) VALUES (1, 'BOX-BRK-001', 'Brake Pad 4-Pack', 200.00, 329.99, 5, 1, 4, 1, 1, 1),
 (2, 'BOX-OIL-001', 'Oil Change Bundle', 45.00, 79.99, 12, 2, 1, NULL, 1, 2),
 (3, 'BOX-FLT-001', 'Filter Maintenance Pack', 30.00, 59.99, 8, 3, 2, NULL, 1, 3),
 (4, 'BOX-BAT-001', 'Battery Service Pack', 125.00, 199.99, 4, 4, 1, 3, 1, 4),
@@ -140,7 +140,7 @@ INSERT INTO junc_labour_tag (tag_id, labour_id) VALUES
 -- Tune-up labour -> Maintenance
 
 --------------------------------------------------- -- BOX / TAG -- Many-to-many --------------------------------------------------- 
-INSERT INTO junc_box_tag (tag_id, box_id) VALUES 
+INSERT INTO junc_item_box_tag (tag_id, item_box_id) VALUES 
 (2, 1), 
 (5, 1), 
 (1, 2), 
@@ -179,7 +179,7 @@ INSERT INTO junc_assembly_item (assembly_id, item_id, quantity) VALUES
 (5, 5, 4); 
 
 --------------------------------------------------- -- PURCHASE ORDER --------------------------------------------------- 
-INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status, item_id, box_id) VALUES 
+INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status, item_id, item_box_id) VALUES 
 (1, 'PO-2026-001', 'Brake Pad Restock', 1, '2026-09-01', '2026-09-04', 'Received', 1, NULL), 
 (2, 'PO-2026-002', 'Motor Oil Restock', 2, '2026-09-03', '2026-09-06', 'Received', 2, NULL), 
 (3, 'PO-2026-003', 'Air Filter Order', 3, '2026-09-05', '2026-09-09', 'Received', 3, NULL), 
@@ -211,7 +211,7 @@ INSERT INTO service_order (id, date_created, date_due, employee_id, customer_id,
 (5, '2026-09-18', '2026-09-24', 3, 5, 'Engine tune-up completed.', 'Spark plugs were heavily worn.', 5, 5, 5);
 
 --------------------------------------------------- -- SALE --------------------------------------------------- 
-INSERT INTO sale (id, timestamp, customer_id, employee_id, discount_id, box_id, item_id, assembly_id, labour_id, service_order_id) VALUES 
+INSERT INTO sale (id, timestamp, customer_id, employee_id, discount_id, item_box_id, item_id, assembly_id, labour_id, service_order_id) VALUES 
 (1, '2026-09-15 10:30:00', 1, 5, 1, NULL, 1, NULL, NULL, 1), 
 (2, '2026-09-15 14:15:00', 2, 5, NULL, 2, NULL, NULL, NULL, 2), 
 (3, '2026-09-16 09:45:00', 3, 2, 2, NULL, NULL, 3, 3, 3), 

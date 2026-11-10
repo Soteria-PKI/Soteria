@@ -13,6 +13,7 @@ pub fn run() {
 
       database_path.push("soteria-db");
       connect_database(&database_path)?;
+      std::env::set_current_dir(app.path().app_data_dir()?)?;
 
       Ok(())
     })

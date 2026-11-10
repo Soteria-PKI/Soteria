@@ -25,17 +25,26 @@
     const vendorName = (id: bigint | null) =>
         vendors.find((v) => v.id == id)?.name ?? "—";
 
-    // Map PO status -> shared status classes from lib/styles
+    // Map PO status -> shared status classes from lib/styles.
+    // TODO: replace with the po_status table once it exists.
     const statusVariant: Record<string, string> = {
-        Draft: "awaiting",
-        Ordered: "progress",
+        Pending: "awaiting",
+        "In Transit": "progress",
         Received: "completed",
     };
     const variantOf = (status: string | null) =>
         status ? statusVariant[status] : undefined;
 
-    const filters = ["All", "Draft", "Ordered", "Received"] as const;
-    let activeFilter = $state<(typeof filters)[number]>("All");
+    // Filter buttons are built from the statuses present in the data.
+    const filters = $derived([
+        "All",
+        ...new Set(
+            purchaseOrders
+                .map((po) => po.status)
+                .filter((s): s is string => !!s?.trim()),
+        ),
+    ]);
+    let activeFilter = $state("All");
     let search = $state("");
 
     const countFor = (f: string) =>
@@ -105,7 +114,11 @@
                 {#each visible as po (po.id)}
                     {@const variant = variantOf(po.status)}
                     <tr class={variant ? `row-status-${variant}` : ""}>
-                        <td><span class="order-link">{po.orderId}</span></td>
+                        <td>
+                            <a class="order-link" href="/purchase-orders/{po.id}"
+                                >{po.orderId}</a
+                            >
+                        </td>
                         <td><span class="cell-primary-text">{po.name}</span></td>
                         <td>{vendorName(po.vendorId)}</td>
                         <td>{po.orderDate}</td>
@@ -117,8 +130,12 @@
                             {/if}
                         </td>
                         <td>
-                            {#if variant}
-                                <span class="status-pill status-pill-{variant}">
+                            {#if po.status?.trim()}
+                                <span
+                                    class="status-pill {variant
+                                        ? `status-pill-${variant}`
+                                        : ''}"
+                                >
                                     {po.status}
                                 </span>
                             {:else}

@@ -18,9 +18,8 @@
     "npm:@types/node@^24.13.3": "24.19.2",
     "npm:prettier-plugin-svelte@^4.1.1": "4.1.1_prettier@3.9.10_svelte@5.57.2",
     "npm:prettier@^3.9.10": "3.9.10",
-    "npm:svelte-check@*": "4.7.7_svelte@5.57.2_typescript@6.0.3",
-    "npm:svelte-check@^4.6.0": "4.7.7_svelte@5.57.2_typescript@6.0.3",
-    "npm:svelte-check@^4.7.6": "4.7.7_svelte@5.57.2_typescript@6.0.3",
+    "npm:svelte-check@^4.6.0": "4.7.8_svelte@5.57.2_typescript@6.0.3",
+    "npm:svelte-check@^4.7.6": "4.7.8_svelte@5.57.2_typescript@6.0.3",
     "npm:svelte@^5.56.10": "5.57.2",
     "npm:svelte@^5.57.2": "5.57.2",
     "npm:typescript@~6.0.2": "6.0.3",
@@ -945,8 +944,8 @@
         "ansi-regex"
       ]
     },
-    "svelte-check@4.7.7_svelte@5.57.2_typescript@6.0.3": {
-      "integrity": "sha512-Ge2IMdeTpbJuzNFGRiiMg0RWgbScysKQu7xwcyFJ22+DU9F5nPX51+Q3gHmGqRxYQMx2knreVWt5oCtfe0vf2g==",
+    "svelte-check@4.7.8_svelte@5.57.2_typescript@6.0.3": {
+      "integrity": "sha512-laZ49GFHZ3b0z2PWinJWL0syehc/PTR8aHaUaTiBkWJ+4Y38nhxjmXsSz7CbGa3VdKopViVbrBH3bGNqIAI0bQ==",
       "dependencies": [
         "@jridgewell/trace-mapping",
         "@sveltejs/load-config",

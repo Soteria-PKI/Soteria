@@ -12,6 +12,7 @@ let name = $state("");
       <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
     </a>
   </div>
+  <a href="/ServiceOrder">go to service</a>
   <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
 
   <input id="greet-input" placeholder="Enter a name..." bind:value={name} />

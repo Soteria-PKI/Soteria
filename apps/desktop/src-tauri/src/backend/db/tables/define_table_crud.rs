@@ -49,6 +49,7 @@ macro_rules! define_table_crud {
       #[serde(rename_all = "camelCase")]
       #[ts(export)]
       $v_outer struct $table_name {
+        #[ts(type = "number")]
         id: i64,
         $(
           $(#[$k_comment])*

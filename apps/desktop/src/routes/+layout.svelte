@@ -26,4 +26,9 @@ let { children } = $props();
     display: flex;
     flex-direction: row;
   }
+  /* Fill the space beside the side menu so pages can center their content */
+  .page {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 </style>

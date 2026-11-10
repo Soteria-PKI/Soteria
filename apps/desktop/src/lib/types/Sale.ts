@@ -6,7 +6,7 @@ export type Sale = {
   customerId: bigint;
   employeeId: bigint;
   discountId: bigint | null;
-  boxId: bigint | null;
+  itemBoxId: bigint | null;
   itemId: bigint | null;
   assemblyId: bigint | null;
   labourId: bigint | null;

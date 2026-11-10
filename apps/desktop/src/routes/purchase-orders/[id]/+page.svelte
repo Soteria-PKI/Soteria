@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import { page } from "$app/state";
+  import { goto } from "$app/navigation";
   import { invoke } from "@tauri-apps/api/core";
   import type { PurchaseOrder } from "$lib/types/PurchaseOrder";
   import type { Vendor } from "$lib/types/Vendor";
@@ -15,7 +17,7 @@
     arrivalDate: string;
     status: string;
     itemId: number | null;
-    boxId: number | null;
+    itemBoxId: number | null;
   };
 
   let po = $state<PurchaseOrder | null>(null);
@@ -47,7 +49,7 @@
     arrivalDate: order.arrivalDate ?? "",
     status: order.status ?? "",
     itemId: num(order.itemId),
-    boxId: num(order.boxId),
+    itemBoxId: num(order.itemBoxId),
   });
 
   // Guards against a slow earlier response overwriting a newer one.
@@ -66,7 +68,7 @@
       const [v, i, b] = await Promise.all([
         readOne<Vendor>("read_one_vendor", order.vendorId),
         readOne<Item>("read_one_item", order.itemId),
-        readOne<ItemBox>("read_one_item_box", order.boxId),
+        readOne<ItemBox>("read_one_item_box", order.itemBoxId),
       ]);
 
       if (token !== loadToken) return;
@@ -84,10 +86,41 @@
     }
   }
 
-  // Re-runs whenever the :id route param changes.
+  // "/purchase-orders/temp-<uuid>" is an unsaved draft: nothing exists in the
+  // database until the user clicks "Save New Purchase Order".
+  const TEMP_PREFIX = "temp-";
+  const isNew = $derived(page.params.id?.startsWith(TEMP_PREFIX) ?? false);
+
+  function initNew() {
+    ++loadToken; // drop any in-flight load
+    const blank: PurchaseOrder = {
+      id: 0n,
+      orderId: "New purchase order",
+      name: "",
+      vendorId: null,
+      orderDate: "",
+      arrivalDate: null,
+      status: EDITABLE_STATUS,
+      itemId: null,
+      itemBoxId: null,
+    };
+    po = blank;
+    vendor = item = itemBox = null;
+    draft = toDraft(blank);
+    error = null;
+    loading = false;
+  }
+
+  // Re-runs only when the :id route param changes. The body is untracked so
+  // the state it reads and writes (po, draft, …) can't re-trigger it and
+  // reset the form while the user is typing.
   $effect(() => {
-    saveError = null;
-    load(Number(page.params.id));
+    const id = page.params.id;
+    untrack(() => {
+      saveError = null;
+      if (id?.startsWith(TEMP_PREFIX)) initNew();
+      else load(Number(id));
+    });
   });
 
   // TODO: replace with the po_status table once it exists.
@@ -132,7 +165,55 @@
     !!draft && draft.name.trim() !== "" && draft.orderDate.trim() !== "",
   );
 
+  // Next "PO-<year>-NNN" after the highest existing one for that year.
+  async function nextOrderId(): Promise<string> {
+    const year = new Date().getFullYear();
+    const prefix = `PO-${year}-`;
+    const existing = await invoke<PurchaseOrder[]>("read_purchase_order");
+    const max = existing.reduce((m, o) => {
+      if (!o.orderId.startsWith(prefix)) return m;
+      const n = parseInt(o.orderId.slice(prefix.length), 10);
+      return Number.isNaN(n) ? m : Math.max(m, n);
+    }, 0);
+    return `${prefix}${String(max + 1).padStart(3, "0")}`;
+  }
+
+  async function create() {
+    if (!draft || !valid) return;
+    saving = true;
+    saveError = null;
+    try {
+      const orderId = await nextOrderId();
+      await invoke("create_purchase_order", {
+        purchaseorder: {
+          id: 0,
+          orderId,
+          name: draft.name.trim(),
+          vendorId: draft.vendorId,
+          orderDate: draft.orderDate,
+          arrivalDate: draft.arrivalDate.trim() || null,
+          status: draft.status.trim() || EDITABLE_STATUS,
+          itemId: draft.itemId,
+          itemBoxId: draft.itemBoxId,
+        },
+      });
+      // create returns nothing, so look the new row up by its order id.
+      const created = (
+        await invoke<PurchaseOrder[]>("read_purchase_order")
+      ).find((o) => o.orderId === orderId);
+      await goto(
+        created ? `/purchase-orders/${created.id}` : "/purchase-orders",
+        { replaceState: true },
+      );
+    } catch (e) {
+      saveError = e instanceof Error ? e.message : String(e);
+    } finally {
+      saving = false;
+    }
+  }
+
   async function save() {
+    if (isNew) return create();
     if (!po || !draft || !dirty || !valid) return;
     saving = true;
     saveError = null;
@@ -147,7 +228,7 @@
           arrivalDate: draft.arrivalDate.trim() || null,
           status: draft.status.trim() || null,
           itemId: draft.itemId,
-          boxId: draft.boxId,
+          itemBoxId: draft.itemBoxId,
         },
       });
       await load(Number(po.id)); // re-read so the page reflects what was saved
@@ -160,8 +241,6 @@
 </script>
 
 <section class="po-detail">
-  <a class="order-link" href="/purchase-orders">← Back to purchase orders</a>
-
   {#if loading && !po}
     <p class="cell-sub-text">Loading…</p>
   {:else if error}
@@ -187,7 +266,12 @@
         <dl>
           <dt class="input-label">Name</dt>
           <dd>
-            <input class="form-input" bind:value={draft.name} required />
+            <input
+              class="form-input"
+              class:field-missing={isNew && draft.name.trim() === ""}
+              bind:value={draft.name}
+              required
+            />
           </dd>
 
           <dt class="input-label">Vendor</dt>
@@ -204,6 +288,7 @@
           <dd>
             <input
               class="form-input"
+              class:field-missing={isNew && draft.orderDate.trim() === ""}
               type="date"
               bind:value={draft.orderDate}
               required
@@ -236,7 +321,7 @@
 
           <dt class="input-label">Item box</dt>
           <dd>
-            <select class="form-input" bind:value={draft.boxId}>
+            <select class="form-input" bind:value={draft.itemBoxId}>
               <option value={null}>—</option>
               {#each itemBoxes as b (b.id)}
                 <option value={Number(b.id)}>{b.name}</option>
@@ -245,12 +330,22 @@
           </dd>
         </dl>
 
-        {#if dirty || saveError}
+        {#if isNew ? valid || saveError : dirty || saveError}
           <div class="po-detail__actions">
             {#if saveError}
               <span class="cell-sub-text">{saveError}</span>
             {/if}
-            {#if dirty}
+            {#if isNew}
+              {#if valid}
+                <button
+                  type="submit"
+                  class="btn btn-primary"
+                  disabled={saving}
+                >
+                  {saving ? "Saving…" : "Save New Purchase Order"}
+                </button>
+              {/if}
+            {:else if dirty}
               <button
                 type="button"
                 class="btn btn-secondary"
@@ -355,5 +450,12 @@
   }
   dd :global(.form-input) {
     width: 100%;
+  }
+  /* Mandatory field still empty on a new purchase order */
+  .field-missing,
+  .field-missing:focus {
+    border-color: #dc2626;
+    background-color: #fef2f2;
+    box-shadow: 0 0 0 2px #fee2e2;
   }
 </style>

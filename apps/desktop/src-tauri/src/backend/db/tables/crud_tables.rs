@@ -91,7 +91,7 @@ define_table_crud! {
     arrival_date: Option<String>,
     status: Option<String>,
     item_id: Option<i64>,
-    box_id: Option<i64>,
+    item_box_id: Option<i64>,
   }
 
   pub struct Sale {
@@ -99,7 +99,7 @@ define_table_crud! {
     customer_id: i64,
     employee_id: i64,
     discount_id: Option<i64>,
-    box_id: Option<i64>,
+    item_box_id: Option<i64>,
     item_id: Option<i64>,
     assembly_id: Option<i64>,
     labour_id: Option<i64>,

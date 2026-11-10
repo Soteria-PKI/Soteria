@@ -9,5 +9,5 @@ export type PurchaseOrder = {
   arrivalDate: string | null;
   status: string | null;
   itemId: bigint | null;
-  boxId: bigint | null;
+  itemBoxId: bigint | null;
 };

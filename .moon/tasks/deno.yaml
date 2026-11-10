@@ -1,0 +1,3 @@
+tasks:
+  format:
+    script: "deno --allow-run --allow-env npm:@biomejs/biome format . --write && deno --allow-env --allow-sys --allow-read --allow-write  prettier . --write"

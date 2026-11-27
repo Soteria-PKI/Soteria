@@ -1,6 +1,24 @@
 use crate::define_table_crud;
 
 define_table_crud! {
+  pub struct Appointment {
+    appointment_number: Option<i64>,
+    date_taken: String,
+    date_occurring: String,
+    approved: bool,
+    service_id: Option<i64>,
+    customer_id: Option<i64>,
+  }
+
+  pub struct Assembly {
+    sku: Option<String>,
+    name: String,
+    cost: Option<f64>,
+    price: Option<f64>,
+    discount_id: Option<i64>,
+    tax_class_id: Option<i64>,
+  }
+
   pub struct Category {
     name: String,
     description: Option<String>,
@@ -27,38 +45,6 @@ define_table_crud! {
     title: Option<String>,
   }
 
-  pub struct Tag {
-    name: Option<String>
-  }
-
-  pub struct TaxClass {
-    class: String,
-    amount: i64,
-  }
-
-  pub struct Assembly {
-    sku: Option<String>,
-    name: String,
-    cost: Option<f64>,
-    price: Option<f64>,
-    discount_id: Option<i64>,
-    tax_class_id: Option<i64>,
-  }
-
-  pub struct Labour {
-    sku: Option<String>,
-    name: String,
-    cost: Option<f64>,
-    price: Option<f64>,
-    duration: Option<i64>,
-    discount_id: Option<i64>,
-    tax_class_id: Option<i64>,
-  }
-
-  pub struct Vendor {
-    name: String
-  }
-
   pub struct Item {
     sku: Option<String>,
     name: String,
@@ -81,6 +67,16 @@ define_table_crud! {
     discount_id: Option<i64>,
     tax_class_id: Option<i64>,
     vendor_id: Option<i64>,
+  }
+
+  pub struct Labour {
+    sku: Option<String>,
+    name: String,
+    cost: Option<f64>,
+    price: Option<f64>,
+    duration: Option<i64>,
+    discount_id: Option<i64>,
+    tax_class_id: Option<i64>,
   }
 
   pub struct PurchaseOrder {
@@ -116,15 +112,6 @@ define_table_crud! {
     labour_id: Option<i64>,
   }
 
-  pub struct Appointment {
-    appointment_number: Option<i64>,
-    date_taken: String,
-    date_occurring: String,
-    approved: bool,
-    service_id: Option<i64>,
-    customer_id: Option<i64>,
-  }
-
   pub struct ServiceOrder {
     date_created: String,
     date_due: Option<String>,
@@ -135,5 +122,18 @@ define_table_crud! {
     item_id: Option<i64>,
     labour_id: Option<i64>,
     assembly_id: Option<i64>,
+  }
+
+  pub struct Tag {
+    name: Option<String>
+  }
+
+  pub struct TaxClass {
+    class: String,
+    amount: i64,
+  }
+
+  pub struct Vendor {
+    name: String
   }
 }

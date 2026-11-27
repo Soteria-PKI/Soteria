@@ -1,5 +1,5 @@
 {
-  "workspace": ["apps/desktop", "apps/web/frontend"],
+  "workspace": ["apps/desktop", "apps/web/frontend", "apps/web/backend"],
   "imports": {
     "@biomejs/biome": "npm:@biomejs/biome@^2.6.4",
     "@commitlint/cli": "npm:@commitlint/cli@^21.2.4",

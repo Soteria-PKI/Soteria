@@ -14,6 +14,7 @@ target/
 
 # Node.js
 node_modules/
+.vite/
 
 # Database file
 soteria-db

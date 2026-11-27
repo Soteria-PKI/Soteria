@@ -9,11 +9,12 @@ pub fn run() {
     .plugin(tauri_plugin_opener::init())
     .setup(|app| {
       let mut database_path = app.path().app_data_dir()?;
+      println!("{:?}", database_path);
       fs::create_dir_all(&database_path)?;
 
       database_path.push("soteria-db");
       connect_database(&database_path)?;
-
+      std::env::set_current_dir(app.path().app_data_dir()?)?;
       Ok(())
     })
     .invoke_handler(tauri_handler! {

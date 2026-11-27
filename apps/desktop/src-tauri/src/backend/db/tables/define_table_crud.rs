@@ -65,19 +65,15 @@ macro_rules! define_table_crud {
             let table_name: &str = stringify!([<$table_name: snake>]);
             let $table_name { id: _, $($k,)+ } = [<$table_name:lower>];
 
-            let mut fields_param = Vec::new();
+            let fields: Vec<&str> = vec![$(stringify!($k)),+];
+let fields_param: Vec<String> = (1..=fields.len()).map(|i| format!("?{}", i)).collect();
 
-            for i in 0..(stringify!($($k)+).split(" ").count()) {
-              fields_param.push(format!("?{}", i + 1));
-            }
-            let fields = stringify!($($k)+).split(" ").collect::<Vec<&str>>();
-
-            let command = format!(
-              "INSERT INTO {} ({}) VALUES ({})",
-              table_name,
-              fields.join(","),
-              fields_param.join(",")
-            );
+let command = format!(
+  "INSERT INTO {} ({}) VALUES ({})",
+  table_name,
+  fields.join(","),
+  fields_param.join(",")
+);
 
             connection.execute(&command, ($($k,)+))?;
             connection.close().map_err(|(_, v)| v)?;

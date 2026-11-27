@@ -49,6 +49,7 @@ macro_rules! define_table_crud {
       #[serde(rename_all = "camelCase")]
       #[ts(export)]
       $v_outer struct $table_name {
+        #[ts(type = "number")]
         id: i64,
         $(
           $(#[$k_comment])*
@@ -64,12 +65,8 @@ macro_rules! define_table_crud {
             let table_name: &str = stringify!([<$table_name: snake>]);
             let $table_name { id: _, $($k,)+ } = [<$table_name:lower>];
 
-            let mut fields_param = Vec::new();
-
-            for i in 0..(stringify!($($k)+).split(" ").count()) {
-              fields_param.push(format!("?{}", i + 1));
-            }
-            let fields = stringify!($($k)+).split(" ").collect::<Vec<&str>>();
+            let fields: Vec<&str> = vec![$(stringify!($k)),+];
+            let fields_param: Vec<String> = (1..=fields.len()).map(|i| format!("?{}", i)).collect();
 
             let command = format!(
               "INSERT INTO {} ({}) VALUES ({})",

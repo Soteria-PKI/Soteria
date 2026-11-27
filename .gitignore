@@ -17,3 +17,6 @@ node_modules/
 
 # Database file
 soteria-db
+
+# TS-RS bindings
+bindings/

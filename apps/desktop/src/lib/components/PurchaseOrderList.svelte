@@ -2,7 +2,8 @@
   import { onMount } from "svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { poList } from "$lib/state/purchaseOrderList.svelte";
-  import type { PurchaseOrder } from "$lib/types/PurchaseOrder";
+  import { statusVariantOf } from "$lib/purchaseOrderStatus";
+  import type { CompletePurchaseOrder } from "$lib/types/CompletePurchaseOrder";
   import type { Vendor } from "$lib/types/Vendor";
 
   let vendors = $state<Vendor[]>([]);
@@ -14,7 +15,7 @@
     try {
       [vendors, poList.purchaseOrders] = await Promise.all([
         invoke<Vendor[]>("read_vendor"),
-        invoke<PurchaseOrder[]>("read_purchase_order"),
+        invoke<CompletePurchaseOrder[]>("read_complete_purchase_order"),
       ]);
     } catch (e) {
       error = String(e);
@@ -26,18 +27,15 @@
   const vendorName = (id: bigint | null) =>
     vendors.find((v) => v.id == id)?.name ?? "—";
 
-  // Map PO status -> shared status classes from lib/styles.
-  // TODO: replace with the po_status table once it exists.
-  const statusVariant: Record<string, string> = {
-    Pending: "awaiting",
-    "In Transit": "progress",
-    Received: "completed",
-  };
-  const variantOf = (status: string | null) =>
-    status ? statusVariant[status] : undefined;
+  // Names of everything on the order: items first, then item boxes.
+  const lineNames = (po: CompletePurchaseOrder) => [
+    ...po.items.map((l) => l.item.name),
+    ...po.itemBoxes.map((l) => l.itemBox.name),
+  ];
 
   const visible = $derived(
-    purchaseOrders.filter((po) => {
+    purchaseOrders.filter((complete) => {
+      const po = complete.purchaseOrder;
       if (poList.activeFilter !== "All" && po.status !== poList.activeFilter)
         return false;
       const q = poList.search.trim().toLowerCase();
@@ -45,7 +43,8 @@
         !q ||
         po.orderId.toLowerCase().includes(q) ||
         po.name.toLowerCase().includes(q) ||
-        vendorName(po.vendorId).toLowerCase().includes(q)
+        vendorName(po.vendorId).toLowerCase().includes(q) ||
+        lineNames(complete).some((n) => n.toLowerCase().includes(q))
       );
     }),
   );
@@ -59,6 +58,7 @@
           <th>Order #</th>
           <th>Name</th>
           <th>Vendor</th>
+          <th>Contents</th>
           <th>Ordered</th>
           <th>Arrival</th>
           <th>Status</th>
@@ -66,8 +66,10 @@
       </thead>
 
       <tbody>
-        {#each visible as po (po.id)}
-          {@const variant = variantOf(po.status)}
+        {#each visible as complete (complete.purchaseOrder.id)}
+          {@const po = complete.purchaseOrder}
+          {@const names = lineNames(complete)}
+          {@const variant = statusVariantOf(po.status)}
           <tr class={variant ? `row-status-${variant}` : ""}>
             <td>
               <a class="order-link" href="/purchase-orders/{po.id}"
@@ -76,6 +78,16 @@
             </td>
             <td><span class="cell-primary-text">{po.name}</span></td>
             <td>{vendorName(po.vendorId)}</td>
+            <td title={names.join("\n")}>
+              {#if names.length === 0}
+                <span class="cell-sub-text">—</span>
+              {:else}
+                {names[0]}
+                {#if names.length > 1}
+                  <span class="cell-sub-text">+{names.length - 1} more</span>
+                {/if}
+              {/if}
+            </td>
             <td>{po.orderDate}</td>
             <td>
               {#if po.arrivalDate}
@@ -87,9 +99,7 @@
             <td>
               {#if po.status?.trim()}
                 <span
-                  class="status-pill {variant
-                    ? `status-pill-${variant}`
-                    : ''}"
+                  class="status-pill {variant ? `status-pill-${variant}` : ''}"
                 >
                   {po.status}
                 </span>
@@ -100,7 +110,7 @@
           </tr>
         {:else}
           <tr>
-            <td colspan="6" class="cell-sub-text">
+            <td colspan="7" class="cell-sub-text">
               {loading ? "Loading…" : (error ?? "No purchase orders found.")}
             </td>
           </tr>

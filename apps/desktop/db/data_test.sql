@@ -65,7 +65,12 @@ VALUES
 (2, 'ITM-OIL-001', 'Synthetic Motor Oil 5W30', 28.00, 49.99, 40, NULL, 2, 2),
 (3, 'ITM-FLT-001', 'Engine Air Filter', 18.00, 34.99, 18, NULL, 2, 3),
 (4, 'ITM-BAT-001', '12V Automotive Battery', 110.00, 179.99, 10, 3, 2, 4),
-(5, 'ITM-SPK-001', 'Iridium Spark Plug', 12.00, 24.99, 50, 2, 2, 5);
+(5, 'ITM-SPK-001', 'Iridium Spark Plug', 12.00, 24.99, 50, 2, 2, 5),
+(6, 'ITM-BRK-002', 'Front Brake Rotor', 48.00, 84.99, 12, NULL, 2, 1),
+(7, 'ITM-BRK-003', 'DOT 4 Brake Fluid 1L', 9.00, 17.99, 30, NULL, 2, 1),
+(8, 'ITM-OIL-002', 'Spin-On Oil Filter', 6.00, 12.99, 36, NULL, 2, 2),
+(9, 'ITM-BAT-002', 'Battery Terminal Kit', 7.50, 14.99, 15, NULL, 2, 4),
+(10, 'ITM-SPK-002', 'Ignition Coil Pack', 38.00, 69.99, 8, 2, 2, 5);
 
 --------------------------------------------------- -- LABOUR --------------------------------------------------- 
 INSERT INTO labour 
@@ -162,8 +167,13 @@ INSERT INTO junc_item_tag (tag_id, item_id) VALUES
 (5, 3), 
 (3, 4), 
 (5, 4), 
-(1, 5), 
-(5, 5); 
+(1, 5),
+(5, 5),
+(2, 6),
+(2, 7),
+(5, 8),
+(3, 9),
+(1, 10);
 
 --------------------------------------------------- -- ASSEMBLY / ITEM -- Many-to-many with quantity --------------------------------------------------- 
 INSERT INTO junc_assembly_item (assembly_id, item_id, quantity) VALUES 
@@ -179,12 +189,51 @@ INSERT INTO junc_assembly_item (assembly_id, item_id, quantity) VALUES
 (5, 5, 4); 
 
 --------------------------------------------------- -- PURCHASE ORDER --------------------------------------------------- 
-INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status, item_id, item_box_id) VALUES 
-(1, 'PO-2026-001', 'Brake Pad Restock', 1, '2026-09-01', '2026-09-04', 'Received', 1, NULL), 
-(2, 'PO-2026-002', 'Motor Oil Restock', 2, '2026-09-03', '2026-09-06', 'Received', 2, NULL), 
-(3, 'PO-2026-003', 'Air Filter Order', 3, '2026-09-05', '2026-09-09', 'Received', 3, NULL), 
-(4, 'PO-2026-004', 'Battery Order', 4, '2026-09-07', '2026-09-12', 'In Transit', 4, NULL), 
-(5, 'PO-2026-005', 'Spark Plug Bundle', 5, '2026-09-10', NULL, 'Pending', NULL, 5);
+INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status) VALUES
+(1, 'PO-2026-001', 'Brake Pad Restock', 1, '2026-09-01', '2026-09-04', 'Received'),
+(2, 'PO-2026-002', 'Motor Oil Restock', 2, '2026-09-03', '2026-09-06', 'Received'),
+(3, 'PO-2026-003', 'Air Filter Order', 3, '2026-09-05', '2026-09-09', 'Received'),
+(4, 'PO-2026-004', 'Battery Order', 4, '2026-09-07', '2026-09-12', 'In Transit'),
+(5, 'PO-2026-005', 'Ignition Restock', 5, '2026-09-10', NULL, 'Pending'),
+(6, 'PO-2026-006', 'Brake Service Supplies', 1, '2026-09-12', NULL, 'Pending');
+
+--------------------------------------------------- -- PURCHASE ORDER / ITEM -- Many-to-many with quantity ---------------------------------------------------
+INSERT INTO junc_purchase_order_item (purchase_order_id, item_id, quantity) VALUES
+(1, 1, 12),
+-- Brake Pad Restock -> Ceramic Brake Pad Set
+(1, 6, 4),
+-- Brake Pad Restock -> Front Brake Rotor
+(2, 2, 24),
+-- Motor Oil Restock -> Synthetic Motor Oil
+(2, 8, 20),
+-- Motor Oil Restock -> Spin-On Oil Filter
+(3, 3, 10),
+-- Air Filter Order -> Engine Air Filter
+(4, 4, 6),
+-- Battery Order -> 12V Automotive Battery
+(4, 9, 6),
+-- Battery Order -> Battery Terminal Kit
+(5, 5, 16),
+-- Ignition Restock -> Iridium Spark Plug
+(5, 10, 4),
+-- Ignition Restock -> Ignition Coil Pack
+(6, 7, 6);
+-- Brake Service Supplies -> DOT 4 Brake Fluid
+
+--------------------------------------------------- -- PURCHASE ORDER / BOX -- Many-to-many with quantity ---------------------------------------------------
+INSERT INTO junc_purchase_order_item_box (purchase_order_id, item_box_id, quantity) VALUES
+(1, 1, 2),
+-- Brake Pad Restock -> Brake Pad 4-Pack
+(2, 2, 6),
+-- Motor Oil Restock -> Oil Change Bundle
+(3, 3, 4),
+-- Air Filter Order -> Filter Maintenance Pack
+(4, 4, 2),
+-- Battery Order -> Battery Service Pack
+(5, 5, 3),
+-- Ignition Restock -> Spark Plug 4-Pack
+(6, 1, 1);
+-- Brake Service Supplies -> Brake Pad 4-Pack
 
 --------------------------------------------------- -- SERVICE --------------------------------------------------- 
 INSERT INTO service (id, name, description, category_id, employee_id, item_id, assembly_id, labour_id) VALUES 

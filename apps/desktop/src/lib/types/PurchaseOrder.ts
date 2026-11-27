@@ -8,6 +8,4 @@ export type PurchaseOrder = {
   orderDate: string;
   arrivalDate: string | null;
   status: string | null;
-  itemId: bigint | null;
-  itemBoxId: bigint | null;
 };

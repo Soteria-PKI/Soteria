@@ -3,10 +3,22 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { invoke } from "@tauri-apps/api/core";
+  import { EDITABLE_STATUS, statusVariantOf } from "$lib/purchaseOrderStatus";
+  import type { CompletePurchaseOrder } from "$lib/types/CompletePurchaseOrder";
   import type { PurchaseOrder } from "$lib/types/PurchaseOrder";
   import type { Vendor } from "$lib/types/Vendor";
   import type { Item } from "$lib/types/Item";
   import type { ItemBox } from "$lib/types/ItemBox";
+
+  // One item or item box on the order. `name` and `sku` are only for display.
+  type LineKind = "item" | "itemBox";
+  type Line = {
+    kind: LineKind;
+    id: number;
+    name: string;
+    sku: string | null;
+    quantity: number | null; // null while the quantity input is empty
+  };
 
   // Editable copy of the order. Ids are plain numbers at runtime (JSON),
   // even though the generated types say bigint.
@@ -16,14 +28,12 @@
     orderDate: string;
     arrivalDate: string;
     status: string;
-    itemId: number | null;
-    itemBoxId: number | null;
+    lines: Line[];
   };
 
-  let po = $state<PurchaseOrder | null>(null);
+  let complete = $state<CompletePurchaseOrder | null>(null);
+  const po = $derived(complete?.purchaseOrder ?? null);
   let vendor = $state<Vendor | null>(null);
-  let item = $state<Item | null>(null);
-  let itemBox = $state<ItemBox | null>(null);
   let loading = $state(true);
   let error = $state<string | null>(null);
 
@@ -37,19 +47,34 @@
   const num = (v: bigint | number | null | undefined) =>
     v === null || v === undefined ? null : Number(v);
 
-  const readOne = <T,>(command: string, id: bigint | number | null) =>
-    id === null
-      ? Promise.resolve(null)
-      : invoke<T | null>(command, { id: Number(id) });
+  const lineKey = (kind: LineKind, id: number) => `${kind}:${id}`;
 
-  const toDraft = (order: PurchaseOrder): Draft => ({
-    name: order.name ?? "",
-    vendorId: num(order.vendorId),
-    orderDate: order.orderDate ?? "",
-    arrivalDate: order.arrivalDate ?? "",
-    status: order.status ?? "",
-    itemId: num(order.itemId),
-    itemBoxId: num(order.itemBoxId),
+  // Items first, then item boxes, each in the order the backend sends
+  // (sorted by name).
+  const toLines = (c: CompletePurchaseOrder): Line[] => [
+    ...c.items.map(({ item, quantity }) => ({
+      kind: "item" as const,
+      id: Number(item.id),
+      name: item.name,
+      sku: item.sku,
+      quantity: Number(quantity),
+    })),
+    ...c.itemBoxes.map(({ itemBox, quantity }) => ({
+      kind: "itemBox" as const,
+      id: Number(itemBox.id),
+      name: itemBox.name,
+      sku: itemBox.sku,
+      quantity: Number(quantity),
+    })),
+  ];
+
+  const toDraft = (c: CompletePurchaseOrder): Draft => ({
+    name: c.purchaseOrder.name ?? "",
+    vendorId: num(c.purchaseOrder.vendorId),
+    orderDate: c.purchaseOrder.orderDate ?? "",
+    arrivalDate: c.purchaseOrder.arrivalDate ?? "",
+    status: c.purchaseOrder.status ?? "",
+    lines: toLines(c),
   });
 
   // Guards against a slow earlier response overwriting a newer one.
@@ -62,24 +87,27 @@
     try {
       if (!Number.isInteger(id)) throw new Error("Invalid purchase order id");
 
-      const order = await readOne<PurchaseOrder>("read_one_purchase_order", id);
+      const order = await invoke<CompletePurchaseOrder | null>(
+        "read_one_complete_purchase_order",
+        { id },
+      );
       if (!order) throw new Error(`Purchase order ${id} not found`);
 
-      const [v, i, b] = await Promise.all([
-        readOne<Vendor>("read_one_vendor", order.vendorId),
-        readOne<Item>("read_one_item", order.itemId),
-        readOne<ItemBox>("read_one_item_box", order.itemBoxId),
-      ]);
+      const vendorId = order.purchaseOrder.vendorId;
+      const v =
+        vendorId === null
+          ? null
+          : await invoke<Vendor | null>("read_one_vendor", {
+              id: Number(vendorId),
+            });
 
       if (token !== loadToken) return;
-      po = order;
+      complete = order;
       vendor = v;
-      item = i;
-      itemBox = b;
       draft = toDraft(order);
     } catch (e) {
       if (token !== loadToken) return;
-      po = vendor = item = itemBox = draft = null;
+      complete = vendor = draft = null;
       error = e instanceof Error ? e.message : String(e);
     } finally {
       if (token === loadToken) loading = false;
@@ -93,27 +121,29 @@
 
   function initNew() {
     ++loadToken; // drop any in-flight load
-    const blank: PurchaseOrder = {
-      id: 0n,
-      orderId: "New purchase order",
-      name: "",
-      vendorId: null,
-      orderDate: "",
-      arrivalDate: null,
-      status: EDITABLE_STATUS,
-      itemId: null,
-      itemBoxId: null,
+    const blank: CompletePurchaseOrder = {
+      purchaseOrder: {
+        id: 0n,
+        orderId: "New purchase order",
+        name: "",
+        vendorId: null,
+        orderDate: "",
+        arrivalDate: null,
+        status: EDITABLE_STATUS,
+      },
+      items: [],
+      itemBoxes: [],
     };
-    po = blank;
-    vendor = item = itemBox = null;
+    complete = blank;
+    vendor = null;
     draft = toDraft(blank);
     error = null;
     loading = false;
   }
 
   // Re-runs only when the :id route param changes. The body is untracked so
-  // the state it reads and writes (po, draft, …) can't re-trigger it and
-  // reset the form while the user is typing.
+  // the state it reads and writes (complete, draft, …) can't re-trigger it
+  // and reset the form while the user is typing.
   $effect(() => {
     const id = page.params.id;
     untrack(() => {
@@ -123,16 +153,7 @@
     });
   });
 
-  // TODO: replace with the po_status table once it exists.
-  const statusVariant: Record<string, string> = {
-    Pending: "awaiting",
-    "In Transit": "progress",
-    Received: "completed",
-  };
-  const variant = $derived(po?.status ? statusVariant[po.status] : undefined);
-
-  // Only Pending orders are editable; In Transit, Received and the rest are locked.
-  const EDITABLE_STATUS = "Pending";
+  const variant = $derived(statusVariantOf(po?.status));
   const editable = $derived(po?.status === EDITABLE_STATUS);
 
   // The dropdown options are only needed when the form is editable.
@@ -156,14 +177,84 @@
       });
   });
 
+  const quantityValid = (q: number | null) =>
+    q !== null && Number.isInteger(q) && q >= 1;
+
   const dirty = $derived(
-    !!po &&
+    !!complete &&
       !!draft &&
-      JSON.stringify(draft) !== JSON.stringify(toDraft(po)),
+      JSON.stringify(draft) !== JSON.stringify(toDraft(complete)),
   );
   const valid = $derived(
-    !!draft && draft.name.trim() !== "" && draft.orderDate.trim() !== "",
+    !!draft &&
+      draft.name.trim() !== "" &&
+      draft.orderDate.trim() !== "" &&
+      draft.lines.every((l) => quantityValid(l.quantity)),
   );
+
+  // ---- Adding and removing lines ----------------------------------------
+
+  // Value of the "add" dropdown: "item:<id>" or "itemBox:<id>", or "".
+  let newLine = $state("");
+  let newLineQuantity = $state<number | null>(1);
+
+  // Items and boxes already on the order can't be added a second time.
+  const onOrder = $derived(
+    new Set(draft?.lines.map((l) => lineKey(l.kind, l.id)) ?? []),
+  );
+
+  function addLine() {
+    if (!draft || !newLine || !quantityValid(newLineQuantity)) return;
+    const [kind, rawId] = newLine.split(":") as [LineKind, string];
+    const id = Number(rawId);
+    const source =
+      kind === "item"
+        ? items.find((i) => Number(i.id) === id)
+        : itemBoxes.find((b) => Number(b.id) === id);
+    if (!source || onOrder.has(newLine)) return;
+
+    draft.lines.push({
+      kind,
+      id,
+      name: source.name,
+      sku: source.sku,
+      quantity: newLineQuantity,
+    });
+    newLine = "";
+    newLineQuantity = 1;
+  }
+
+  function removeLine(index: number) {
+    draft?.lines.splice(index, 1);
+  }
+
+  // ---- Saving -------------------------------------------------------------
+
+  // Body of create_complete_purchase_order / update_complete_purchase_order.
+  const toInput = (
+    d: Draft,
+    id: number,
+    orderId: string,
+    status: string | null,
+  ) => {
+    const linesOf = (kind: LineKind) =>
+      d.lines
+        .filter((l) => l.kind === kind)
+        .map((l) => ({ id: l.id, quantity: l.quantity }));
+    return {
+      purchaseOrder: {
+        id,
+        orderId,
+        name: d.name.trim(),
+        vendorId: d.vendorId,
+        orderDate: d.orderDate,
+        arrivalDate: d.arrivalDate.trim() || null,
+        status,
+      },
+      items: linesOf("item"),
+      itemBoxes: linesOf("itemBox"),
+    };
+  };
 
   // Next "PO-<year>-NNN" after the highest existing one for that year.
   async function nextOrderId(): Promise<string> {
@@ -184,27 +275,15 @@
     saveError = null;
     try {
       const orderId = await nextOrderId();
-      await invoke("create_purchase_order", {
-        purchaseorder: {
-          id: 0,
+      const id = await invoke<number>("create_complete_purchase_order", {
+        order: toInput(
+          draft,
+          0,
           orderId,
-          name: draft.name.trim(),
-          vendorId: draft.vendorId,
-          orderDate: draft.orderDate,
-          arrivalDate: draft.arrivalDate.trim() || null,
-          status: draft.status.trim() || EDITABLE_STATUS,
-          itemId: draft.itemId,
-          itemBoxId: draft.itemBoxId,
-        },
+          draft.status.trim() || EDITABLE_STATUS,
+        ),
       });
-      // create returns nothing, so look the new row up by its order id.
-      const created = (
-        await invoke<PurchaseOrder[]>("read_purchase_order")
-      ).find((o) => o.orderId === orderId);
-      await goto(
-        created ? `/purchase-orders/${created.id}` : "/purchase-orders",
-        { replaceState: true },
-      );
+      await goto(`/purchase-orders/${id}`, { replaceState: true });
     } catch (e) {
       saveError = e instanceof Error ? e.message : String(e);
     } finally {
@@ -218,18 +297,13 @@
     saving = true;
     saveError = null;
     try {
-      await invoke("update_purchase_order", {
-        with: {
-          id: Number(po.id),
-          orderId: po.orderId,
-          name: draft.name.trim(),
-          vendorId: draft.vendorId,
-          orderDate: draft.orderDate,
-          arrivalDate: draft.arrivalDate.trim() || null,
-          status: draft.status.trim() || null,
-          itemId: draft.itemId,
-          itemBoxId: draft.itemBoxId,
-        },
+      await invoke("update_complete_purchase_order", {
+        order: toInput(
+          draft,
+          Number(po.id),
+          po.orderId,
+          draft.status.trim() || null,
+        ),
       });
       await load(Number(po.id)); // re-read so the page reflects what was saved
     } catch (e) {
@@ -240,12 +314,123 @@
   }
 </script>
 
+{#snippet linesTable(lines: Line[], canEdit: boolean)}
+  <div class="po-lines">
+    <h2 class="input-label po-lines__title">Contents</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="po-lines__type">Type</th>
+          <th>Name</th>
+          <th class="po-lines__sku">SKU</th>
+          <th class="po-lines__qty">Qty</th>
+          {#if canEdit}<th class="po-lines__action"></th>{/if}
+        </tr>
+      </thead>
+      <tbody>
+        {#each lines as line, index (lineKey(line.kind, line.id))}
+          <tr>
+            <td class="cell-sub-text">
+              {line.kind === "item" ? "Item" : "Box"}
+            </td>
+            <td><span class="cell-primary-text">{line.name}</span></td>
+            <td class="cell-sub-text">{line.sku?.trim() || "—"}</td>
+            <td class="po-lines__qty">
+              {#if canEdit && draft}
+                <input
+                  class="form-input po-lines__qty-input"
+                  class:field-missing={!quantityValid(line.quantity)}
+                  type="number"
+                  min="1"
+                  step="1"
+                  aria-label="Quantity of {line.name}"
+                  bind:value={draft.lines[index].quantity}
+                />
+              {:else}
+                {line.quantity}
+              {/if}
+            </td>
+            {#if canEdit}
+              <td class="po-lines__action">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-sm"
+                  onclick={() => removeLine(index)}
+                >
+                  Remove
+                </button>
+              </td>
+            {/if}
+          </tr>
+        {:else}
+          <tr>
+            <td colspan={canEdit ? 5 : 4} class="cell-sub-text">
+              No items on this order.
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+
+    {#if canEdit}
+      <div class="po-lines__add">
+        <select
+          class="form-input"
+          aria-label="Item or box to add"
+          bind:value={newLine}
+        >
+          <option value="">Add an item or box…</option>
+          <optgroup label="Items">
+            {#each items as i (i.id)}
+              {@const key = lineKey("item", Number(i.id))}
+              <option value={key} disabled={onOrder.has(key)}>
+                {i.name}{i.sku ? ` (${i.sku})` : ""}
+              </option>
+            {/each}
+          </optgroup>
+          <optgroup label="Boxes">
+            {#each itemBoxes as b (b.id)}
+              {@const key = lineKey("itemBox", Number(b.id))}
+              <option value={key} disabled={onOrder.has(key)}>
+                {b.name}{b.sku ? ` (${b.sku})` : ""}
+              </option>
+            {/each}
+          </optgroup>
+        </select>
+        <input
+          class="form-input po-lines__qty-input"
+          type="number"
+          min="1"
+          step="1"
+          aria-label="Quantity to add"
+          bind:value={newLineQuantity}
+          onkeydown={(e) => {
+            // Enter adds the line instead of submitting the whole form.
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addLine();
+            }
+          }}
+        />
+        <button
+          type="button"
+          class="btn btn-secondary"
+          disabled={!newLine || !quantityValid(newLineQuantity)}
+          onclick={addLine}
+        >
+          Add
+        </button>
+      </div>
+    {/if}
+  </div>
+{/snippet}
+
 <section class="po-detail">
-  {#if loading && !po}
+  {#if loading && !complete}
     <p class="cell-sub-text">Loading…</p>
   {:else if error}
     <p class="cell-sub-text">{error}</p>
-  {:else if po && draft}
+  {:else if complete && po && draft}
     <header class="po-detail__header">
       <h1>{po.orderId}</h1>
       {#if po.status?.trim()}
@@ -308,27 +493,9 @@
           <dd>
             <input class="form-input" bind:value={draft.status} />
           </dd>
-
-          <dt class="input-label">Item</dt>
-          <dd>
-            <select class="form-input" bind:value={draft.itemId}>
-              <option value={null}>—</option>
-              {#each items as i (i.id)}
-                <option value={Number(i.id)}>{i.name}</option>
-              {/each}
-            </select>
-          </dd>
-
-          <dt class="input-label">Item box</dt>
-          <dd>
-            <select class="form-input" bind:value={draft.itemBoxId}>
-              <option value={null}>—</option>
-              {#each itemBoxes as b (b.id)}
-                <option value={Number(b.id)}>{b.name}</option>
-              {/each}
-            </select>
-          </dd>
         </dl>
+
+        {@render linesTable(draft.lines, true)}
 
         {#if isNew ? valid || saveError : dirty || saveError}
           <div class="po-detail__actions">
@@ -337,11 +504,7 @@
             {/if}
             {#if isNew}
               {#if valid}
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  disabled={saving}
-                >
+                <button type="submit" class="btn btn-primary" disabled={saving}>
                   {saving ? "Saving…" : "Save New Purchase Order"}
                 </button>
               {/if}
@@ -350,7 +513,7 @@
                 type="button"
                 class="btn btn-secondary"
                 disabled={saving}
-                onclick={() => (draft = toDraft(po!))}
+                onclick={() => (draft = toDraft(complete!))}
               >
                 Discard
               </button>
@@ -387,27 +550,9 @@
             <dt class="input-label">Arrival</dt>
             <dd>{po.arrivalDate}</dd>
           {/if}
-
-          {#if item?.name?.trim()}
-            <dt class="input-label">Item</dt>
-            <dd>
-              {item.name}
-              {#if item.sku?.trim()}
-                <span class="cell-sub-text">({item.sku})</span>
-              {/if}
-            </dd>
-          {/if}
-
-          {#if itemBox?.name?.trim()}
-            <dt class="input-label">Item box</dt>
-            <dd>
-              {itemBox.name}
-              {#if itemBox.sku?.trim()}
-                <span class="cell-sub-text">({itemBox.sku})</span>
-              {/if}
-            </dd>
-          {/if}
         </dl>
+
+        {@render linesTable(toLines(complete), false)}
       </div>
     {/if}
   {/if}
@@ -451,6 +596,47 @@
   dd :global(.form-input) {
     width: 100%;
   }
+
+  /* Item and box lines */
+  .po-lines {
+    margin-top: 20px;
+  }
+  .po-lines__title {
+    margin: 0 0 8px;
+  }
+  .po-lines :global(.data-table) {
+    width: 100%;
+  }
+  .po-lines__type {
+    width: 56px;
+  }
+  .po-lines__sku {
+    width: 120px;
+  }
+  .po-lines__qty {
+    width: 88px;
+    text-align: right;
+  }
+  .po-lines__action {
+    width: 84px;
+    text-align: right;
+  }
+  .po-lines__qty-input {
+    width: 72px;
+    box-sizing: border-box;
+    text-align: right;
+  }
+  .po-lines__add {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 0 4px;
+  }
+  .po-lines__add select {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
   /* Mandatory field still empty on a new purchase order */
   .field-missing,
   .field-missing:focus {

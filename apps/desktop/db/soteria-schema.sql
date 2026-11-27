@@ -202,11 +202,31 @@ CREATE TABLE IF NOT EXISTS  purchase_order (
 	order_date           DATE NOT NULL    ,
 	arrival_date         DATE     ,
 	status               TEXT     ,
-	item_id              INT     ,
-	item_box_id               INT     ,
-	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
-	FOREIGN KEY ( item_id ) REFERENCES item( id )  ,
-	FOREIGN KEY ( item_box_id ) REFERENCES item_box( id )  
+	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )
+ );
+
+---------------------------------------------------
+---          junc_purchase_order_item           ---
+---------------------------------------------------
+CREATE TABLE IF NOT EXISTS  junc_purchase_order_item (
+	purchase_order_id    INTEGER NOT NULL   ,
+	item_id              INTEGER NOT NULL   ,
+	quantity             INTEGER NOT NULL DEFAULT 1   ,
+	CONSTRAINT pk_junc_purchase_order_item PRIMARY KEY ( purchase_order_id, item_id ),
+	FOREIGN KEY ( purchase_order_id ) REFERENCES purchase_order( id ) ON DELETE CASCADE  ,
+	FOREIGN KEY ( item_id ) REFERENCES item( id )
+ );
+
+---------------------------------------------------
+---        junc_purchase_order_item_box         ---
+---------------------------------------------------
+CREATE TABLE IF NOT EXISTS  junc_purchase_order_item_box (
+	purchase_order_id    INTEGER NOT NULL   ,
+	item_box_id          INTEGER NOT NULL   ,
+	quantity             INTEGER NOT NULL DEFAULT 1   ,
+	CONSTRAINT pk_junc_purchase_order_item_box PRIMARY KEY ( purchase_order_id, item_box_id ),
+	FOREIGN KEY ( purchase_order_id ) REFERENCES purchase_order( id ) ON DELETE CASCADE  ,
+	FOREIGN KEY ( item_box_id ) REFERENCES item_box( id )
  );
 
 ---------------------------------------------------

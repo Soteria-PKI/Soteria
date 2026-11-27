@@ -1,5 +1,8 @@
 pub mod backend;
-pub use backend::db::{database_connection::connect_database, tables::crud_tables};
+pub use backend::db::{
+  database_connection::connect_database,
+  tables::{complete_purchase_order, crud_tables},
+};
 use std::fs;
 use tauri::Manager;
 
@@ -19,7 +22,11 @@ pub fn run() {
     })
     .invoke_handler(tauri_handler! {
       appointment, assembly, category, customer, discount, employee, item, item_box,
-      labour, purchase_order, service_order, sale, service, tag, tax_class, vendor
+      labour, purchase_order, service_order, sale, service, tag, tax_class, vendor;
+      complete_purchase_order::read_complete_purchase_order,
+      complete_purchase_order::read_one_complete_purchase_order,
+      complete_purchase_order::create_complete_purchase_order,
+      complete_purchase_order::update_complete_purchase_order,
     })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

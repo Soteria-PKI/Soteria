@@ -14,7 +14,7 @@
     "All",
     ...new Set(
       poList.purchaseOrders
-        .map((po) => po.status)
+        .map((po) => po.purchaseOrder.status)
         .filter((s): s is string => !!s?.trim()),
     ),
   ]);
@@ -22,7 +22,8 @@
   const countFor = (f: string) =>
     f === "All"
       ? poList.purchaseOrders.length
-      : poList.purchaseOrders.filter((po) => po.status === f).length;
+      : poList.purchaseOrders.filter((po) => po.purchaseOrder.status === f)
+          .length;
 </script>
 
 <section class="po-screen">

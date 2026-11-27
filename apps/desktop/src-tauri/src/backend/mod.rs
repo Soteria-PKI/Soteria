@@ -10,6 +10,9 @@ pub mod db {
 
     /// CRUD definition macro.
     pub mod define_table_crud;
+
+    /// Purchase orders with their item and item box lines.
+    pub mod complete_purchase_order;
   }
 }
 

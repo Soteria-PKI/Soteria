@@ -1,8 +1,8 @@
-import type { PurchaseOrder } from "$lib/types/PurchaseOrder";
+import type { CompletePurchaseOrder } from "$lib/types/CompletePurchaseOrder";
 
 // Shared between the purchase-orders layout (toolbar) and the list component.
 export const poList = $state({
   search: "",
   activeFilter: "All",
-  purchaseOrders: [] as PurchaseOrder[],
+  purchaseOrders: [] as CompletePurchaseOrder[],
 });

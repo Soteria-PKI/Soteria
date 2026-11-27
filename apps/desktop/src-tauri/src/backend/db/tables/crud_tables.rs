@@ -90,8 +90,6 @@ define_table_crud! {
     order_date: String,
     arrival_date: Option<String>,
     status: Option<String>,
-    item_id: Option<i64>,
-    item_box_id: Option<i64>,
   }
 
   pub struct Sale {

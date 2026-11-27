@@ -33,7 +33,7 @@ const runCommand = async () => {
   console.log(decode(stdout));
 
   if (!success) {
-    console.log(decode(stderr))
+    console.error(decode(stderr));
     Deno.exit(1);
   }
 };

@@ -8,7 +8,7 @@
     let items: ServiceOrder[] = $state([]);
     let Myfilters = {
         filteredCondition(value: ServiceOrder, index: number, array: Serializable[]): value is ServiceOrder {
-            return value.id == BigInt(1);
+            return true;
         }
     }
 
@@ -21,5 +21,9 @@
     });
 </script>
 
-<List items = {items} filter = {Myfilters}></List>
-<a href="/ServiceOrder/Create-Edit">create</a>
+<List
+    items={items}
+    filter={Myfilters}
+    href={(order) => `/ServiceOrder/Edit?id=${order.id}`}
+></List>
+<a href="/ServiceOrder/Edit">create</a>

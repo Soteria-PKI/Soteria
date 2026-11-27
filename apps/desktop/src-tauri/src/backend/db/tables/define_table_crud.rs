@@ -66,14 +66,14 @@ macro_rules! define_table_crud {
             let $table_name { id: _, $($k,)+ } = [<$table_name:lower>];
 
             let fields: Vec<&str> = vec![$(stringify!($k)),+];
-let fields_param: Vec<String> = (1..=fields.len()).map(|i| format!("?{}", i)).collect();
+            let fields_param: Vec<String> = (1..=fields.len()).map(|i| format!("?{}", i)).collect();
 
-let command = format!(
-  "INSERT INTO {} ({}) VALUES ({})",
-  table_name,
-  fields.join(","),
-  fields_param.join(",")
-);
+            let command = format!(
+              "INSERT INTO {} ({}) VALUES ({})",
+              table_name,
+              fields.join(","),
+              fields_param.join(",")
+            );
 
             connection.execute(&command, ($($k,)+))?;
             connection.close().map_err(|(_, v)| v)?;

@@ -6,7 +6,7 @@
 .moon/docker
 .moon/hooks
 
-# Operating-system specific files
+# Operating-system-specific files
 .DS_Store
 
 # Rust
@@ -15,5 +15,8 @@ target/
 # Node.js
 node_modules/
 
-# DB File
-soteria-db.moon/hooks/*
+# Database file
+soteria-db
+
+# TS-RS bindings
+bindings/

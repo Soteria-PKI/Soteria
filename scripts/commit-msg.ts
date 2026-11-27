@@ -25,14 +25,15 @@ const runCommand = async () => {
     baseArguments = baseArguments.concat(`--edit ${arg1}`);
   } else {
     baseArguments = baseArguments.concat(
-      `--config commitlint.base.config.js --edit ${arg1}`,
+      `--config commitlint.base.config.cjs --edit ${arg1}`,
     );
   }
   const command = new Deno.Command("deno", { args: baseArguments.split(" ") });
-  const { success, stdout } = await command.output();
+  const { success, stdout, stderr } = await command.output();
   console.log(decode(stdout));
 
   if (!success) {
+    console.error(decode(stderr));
     Deno.exit(1);
   }
 };

@@ -4,6 +4,7 @@
 # moon
 .moon/cache
 .moon/docker
+.moon/hooks
 
 # Operating-system-specific files
 .DS_Store
@@ -16,3 +17,6 @@ node_modules/
 
 # Database file
 soteria-db
+
+# TS-RS bindings
+bindings/

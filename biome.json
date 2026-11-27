@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
   "formatter": {
     "enabled": true,
     "indentWidth": 2,
@@ -13,6 +13,7 @@
     "enabled": false
   },
   "files": {
-    "maxSize": 2000000
+    "maxSize": 2000000,
+    "includes": ["**", "!**/.svelte-kit/"]
   }
 }

@@ -22,7 +22,7 @@ pub fn run() {
     })
     .invoke_handler(tauri_handler! {
       appointment, assembly, category, customer, discount, employee, item, item_box,
-      labour, purchase_order, service_order, sale, service, tag, tax_class, vendor;
+      labour, po_status, purchase_order, service_order, sale, service, tag, tax_class, vendor;
       complete_purchase_order::read_complete_purchase_order,
       complete_purchase_order::read_one_complete_purchase_order,
       complete_purchase_order::create_complete_purchase_order,

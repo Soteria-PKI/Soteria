@@ -7,5 +7,5 @@ export type PurchaseOrder = {
   vendorId: bigint | null;
   orderDate: string;
   arrivalDate: string | null;
-  status: string | null;
+  statusId: bigint;
 };

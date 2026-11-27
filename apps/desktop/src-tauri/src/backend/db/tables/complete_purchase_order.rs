@@ -61,7 +61,7 @@ pub struct CompletePurchaseOrderInput {
 #[tauri::command]
 pub(crate) fn read_complete_purchase_order() -> Result<Vec<CompletePurchaseOrder>, String> {
   err_wrap(|| {
-    let connection = Connection::open("soteria-db")?;
+    let connection = open()?;
     let mut statement = connection.prepare(&format!("SELECT * FROM {}", PurchaseOrder::TABLE))?;
     let orders = statement
       .query_map([], PurchaseOrder::from_row)?
@@ -81,7 +81,7 @@ pub(crate) fn read_one_complete_purchase_order(
   id: i64,
 ) -> Result<Option<CompletePurchaseOrder>, String> {
   err_wrap(|| {
-    let connection = Connection::open("soteria-db")?;
+    let connection = open()?;
     let order = connection
       .query_row(
         &format!("SELECT * FROM {} WHERE id = ?1", PurchaseOrder::TABLE),
@@ -104,7 +104,7 @@ pub(crate) fn create_complete_purchase_order(
 ) -> Result<i64, String> {
   validate_lines(&order)?;
   err_wrap(|| {
-    let mut connection = Connection::open("soteria-db")?;
+    let mut connection = open()?;
     let transaction = connection.transaction()?;
 
     let id = order.purchase_order.insert(&transaction)?;
@@ -122,7 +122,7 @@ pub(crate) fn update_complete_purchase_order(
 ) -> Result<(), String> {
   validate_lines(&order)?;
   err_wrap(|| {
-    let mut connection = Connection::open("soteria-db")?;
+    let mut connection = open()?;
     let transaction = connection.transaction()?;
     let id = order.purchase_order.id;
 
@@ -233,6 +233,15 @@ fn validate_lines(order: &CompletePurchaseOrderInput) -> Result<(), String> {
   Ok(())
 }
 
+/// Opens the database with foreign keys enforced. SQLite turns them off for
+/// each new connection, so without this an unknown status, vendor, item or
+/// item box id is written without an error.
+fn open() -> Result<Connection, Error> {
+  let connection = Connection::open("soteria-db")?;
+  connection.pragma_update(None, "foreign_keys", true)?;
+  Ok(connection)
+}
+
 fn err_wrap<T, F>(cb: F) -> Result<T, String>
 where
   F: FnOnce() -> Result<T, Error>,
@@ -243,6 +252,18 @@ where
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[test]
+  fn rejects_unknown_status() {
+    // The test data turns on foreign keys for this connection, like `open`.
+    let connection = seeded();
+    let mut order = read(&connection, 5).purchase_order;
+    order.status_id = 99;
+    assert!(order.insert(&connection).is_err());
+
+    order.status_id = 2;
+    assert!(order.insert(&connection).is_ok());
+  }
 
   /// An in-memory database with the real schema and test data.
   fn seeded() -> Connection {

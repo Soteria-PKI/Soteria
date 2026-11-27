@@ -83,13 +83,18 @@ define_table_crud! {
     vendor_id: Option<i64>,
   }
 
+  /// A valid purchase order status (for example "Pending").
+  pub struct PoStatus {
+    name: String,
+  }
+
   pub struct PurchaseOrder {
     order_id: String,
     name: String,
     vendor_id: Option<i64>,
     order_date: String,
     arrival_date: Option<String>,
-    status: Option<String>,
+    pub(crate) status_id: i64,
   }
 
   pub struct Sale {

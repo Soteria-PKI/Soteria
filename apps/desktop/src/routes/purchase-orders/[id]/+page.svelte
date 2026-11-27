@@ -3,8 +3,14 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { invoke } from "@tauri-apps/api/core";
-  import { EDITABLE_STATUS, statusVariantOf } from "$lib/purchaseOrderStatus";
+  import {
+    EDITABLE_STATUS,
+    loadPoStatuses,
+    statusName,
+    statusVariantOf,
+  } from "$lib/purchaseOrderStatus";
   import type { CompletePurchaseOrder } from "$lib/types/CompletePurchaseOrder";
+  import type { PoStatus } from "$lib/types/PoStatus";
   import type { PurchaseOrder } from "$lib/types/PurchaseOrder";
   import type { Vendor } from "$lib/types/Vendor";
   import type { Item } from "$lib/types/Item";
@@ -27,13 +33,14 @@
     vendorId: number | null;
     orderDate: string;
     arrivalDate: string;
-    status: string;
+    statusId: number;
     lines: Line[];
   };
 
   let complete = $state<CompletePurchaseOrder | null>(null);
   const po = $derived(complete?.purchaseOrder ?? null);
   let vendor = $state<Vendor | null>(null);
+  let statuses = $state<PoStatus[]>([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
 
@@ -73,7 +80,7 @@
     vendorId: num(c.purchaseOrder.vendorId),
     orderDate: c.purchaseOrder.orderDate ?? "",
     arrivalDate: c.purchaseOrder.arrivalDate ?? "",
-    status: c.purchaseOrder.status ?? "",
+    statusId: Number(c.purchaseOrder.statusId),
     lines: toLines(c),
   });
 
@@ -87,10 +94,13 @@
     try {
       if (!Number.isInteger(id)) throw new Error("Invalid purchase order id");
 
-      const order = await invoke<CompletePurchaseOrder | null>(
-        "read_one_complete_purchase_order",
-        { id },
-      );
+      const [order, s] = await Promise.all([
+        invoke<CompletePurchaseOrder | null>(
+          "read_one_complete_purchase_order",
+          { id },
+        ),
+        loadPoStatuses(),
+      ]);
       if (!order) throw new Error(`Purchase order ${id} not found`);
 
       const vendorId = order.purchaseOrder.vendorId;
@@ -102,6 +112,7 @@
             });
 
       if (token !== loadToken) return;
+      statuses = s;
       complete = order;
       vendor = v;
       draft = toDraft(order);
@@ -119,26 +130,43 @@
   const TEMP_PREFIX = "temp-";
   const isNew = $derived(page.params.id?.startsWith(TEMP_PREFIX) ?? false);
 
-  function initNew() {
-    ++loadToken; // drop any in-flight load
-    const blank: CompletePurchaseOrder = {
-      purchaseOrder: {
-        id: 0n,
-        orderId: "New purchase order",
-        name: "",
-        vendorId: null,
-        orderDate: "",
-        arrivalDate: null,
-        status: EDITABLE_STATUS,
-      },
-      items: [],
-      itemBoxes: [],
-    };
-    complete = blank;
-    vendor = null;
-    draft = toDraft(blank);
+  // A new order starts with the editable ("Pending") status, so the statuses
+  // must be read first to know its id.
+  async function initNew() {
+    const token = ++loadToken; // drop any in-flight load
+    loading = true;
     error = null;
-    loading = false;
+    try {
+      const s = await loadPoStatuses();
+      const pending = s.find((st) => st.name === EDITABLE_STATUS);
+      if (!pending)
+        throw new Error(`The status "${EDITABLE_STATUS}" does not exist`);
+
+      if (token !== loadToken) return;
+      const blank: CompletePurchaseOrder = {
+        purchaseOrder: {
+          id: 0n,
+          orderId: "New purchase order",
+          name: "",
+          vendorId: null,
+          orderDate: "",
+          arrivalDate: null,
+          statusId: pending.id,
+        },
+        items: [],
+        itemBoxes: [],
+      };
+      statuses = s;
+      complete = blank;
+      vendor = null;
+      draft = toDraft(blank);
+    } catch (e) {
+      if (token !== loadToken) return;
+      complete = vendor = draft = null;
+      error = e instanceof Error ? e.message : String(e);
+    } finally {
+      if (token === loadToken) loading = false;
+    }
   }
 
   // Re-runs only when the :id route param changes. The body is untracked so
@@ -153,8 +181,10 @@
     });
   });
 
-  const variant = $derived(statusVariantOf(po?.status));
-  const editable = $derived(po?.status === EDITABLE_STATUS);
+  // Name of the saved status (not the one picked in the form).
+  const status = $derived(statusName(statuses, po?.statusId));
+  const variant = $derived(statusVariantOf(status));
+  const editable = $derived(status === EDITABLE_STATUS);
 
   // The dropdown options are only needed when the form is editable.
   let optionsLoaded = false;
@@ -231,12 +261,7 @@
   // ---- Saving -------------------------------------------------------------
 
   // Body of create_complete_purchase_order / update_complete_purchase_order.
-  const toInput = (
-    d: Draft,
-    id: number,
-    orderId: string,
-    status: string | null,
-  ) => {
+  const toInput = (d: Draft, id: number, orderId: string) => {
     const linesOf = (kind: LineKind) =>
       d.lines
         .filter((l) => l.kind === kind)
@@ -249,7 +274,7 @@
         vendorId: d.vendorId,
         orderDate: d.orderDate,
         arrivalDate: d.arrivalDate.trim() || null,
-        status,
+        statusId: d.statusId,
       },
       items: linesOf("item"),
       itemBoxes: linesOf("itemBox"),
@@ -276,12 +301,7 @@
     try {
       const orderId = await nextOrderId();
       const id = await invoke<number>("create_complete_purchase_order", {
-        order: toInput(
-          draft,
-          0,
-          orderId,
-          draft.status.trim() || EDITABLE_STATUS,
-        ),
+        order: toInput(draft, 0, orderId),
       });
       await goto(`/purchase-orders/${id}`, { replaceState: true });
     } catch (e) {
@@ -298,12 +318,7 @@
     saveError = null;
     try {
       await invoke("update_complete_purchase_order", {
-        order: toInput(
-          draft,
-          Number(po.id),
-          po.orderId,
-          draft.status.trim() || null,
-        ),
+        order: toInput(draft, Number(po.id), po.orderId),
       });
       await load(Number(po.id)); // re-read so the page reflects what was saved
     } catch (e) {
@@ -425,6 +440,48 @@
   </div>
 {/snippet}
 
+{#snippet statusField()}
+  {#if draft}
+    <dt class="input-label">Status</dt>
+    <dd>
+      <select class="form-input" bind:value={draft.statusId}>
+        {#each statuses as s (s.id)}
+          <option value={Number(s.id)}>{s.name}</option>
+        {/each}
+      </select>
+    </dd>
+  {/if}
+{/snippet}
+
+{#snippet formActions()}
+  {#if isNew ? valid || saveError : dirty || saveError}
+    <div class="po-detail__actions">
+      {#if saveError}
+        <span class="cell-sub-text">{saveError}</span>
+      {/if}
+      {#if isNew}
+        {#if valid}
+          <button type="submit" class="btn btn-primary" disabled={saving}>
+            {saving ? "Saving…" : "Save New Purchase Order"}
+          </button>
+        {/if}
+      {:else if dirty}
+        <button
+          type="button"
+          class="btn btn-secondary"
+          disabled={saving}
+          onclick={() => (draft = toDraft(complete!))}
+        >
+          Discard
+        </button>
+        <button type="submit" class="btn btn-primary" disabled={saving || !valid}>
+          {saving ? "Saving…" : "Save"}
+        </button>
+      {/if}
+    </div>
+  {/if}
+{/snippet}
+
 <section class="po-detail">
   {#if loading && !complete}
     <p class="cell-sub-text">Loading…</p>
@@ -433,9 +490,9 @@
   {:else if complete && po && draft}
     <header class="po-detail__header">
       <h1>{po.orderId}</h1>
-      {#if po.status?.trim()}
+      {#if status}
         <span class="status-pill {variant ? `status-pill-${variant}` : ''}">
-          {po.status}
+          {status}
         </span>
       {/if}
     </header>
@@ -489,47 +546,22 @@
             />
           </dd>
 
-          <dt class="input-label">Status</dt>
-          <dd>
-            <input class="form-input" bind:value={draft.status} />
-          </dd>
+          {@render statusField()}
         </dl>
 
         {@render linesTable(draft.lines, true)}
 
-        {#if isNew ? valid || saveError : dirty || saveError}
-          <div class="po-detail__actions">
-            {#if saveError}
-              <span class="cell-sub-text">{saveError}</span>
-            {/if}
-            {#if isNew}
-              {#if valid}
-                <button type="submit" class="btn btn-primary" disabled={saving}>
-                  {saving ? "Saving…" : "Save New Purchase Order"}
-                </button>
-              {/if}
-            {:else if dirty}
-              <button
-                type="button"
-                class="btn btn-secondary"
-                disabled={saving}
-                onclick={() => (draft = toDraft(complete!))}
-              >
-                Discard
-              </button>
-              <button
-                type="submit"
-                class="btn btn-primary"
-                disabled={saving || !valid}
-              >
-                {saving ? "Saving…" : "Save"}
-              </button>
-            {/if}
-          </div>
-        {/if}
+        {@render formActions()}
       </form>
     {:else}
-      <div class="data-table-container po-detail__card">
+      <!-- Only the status can change once an order is no longer Pending. -->
+      <form
+        class="data-table-container po-detail__card"
+        onsubmit={(e) => {
+          e.preventDefault();
+          save();
+        }}
+      >
         <dl>
           {#if po.name?.trim()}
             <dt class="input-label">Name</dt>
@@ -550,10 +582,14 @@
             <dt class="input-label">Arrival</dt>
             <dd>{po.arrivalDate}</dd>
           {/if}
+
+          {@render statusField()}
         </dl>
 
         {@render linesTable(toLines(complete), false)}
-      </div>
+
+        {@render formActions()}
+      </form>
     {/if}
   {/if}
 </section>

@@ -192,17 +192,26 @@ CREATE TABLE IF NOT EXISTS  junc_assembly_item (
  );
 
 ---------------------------------------------------
+---                  po_status                  ---
+---------------------------------------------------
+CREATE TABLE IF NOT EXISTS  po_status (
+	id                   INTEGER PRIMARY KEY  ,
+	name                 TEXT NOT NULL UNIQUE
+ );
+
+---------------------------------------------------
 ---               purchase_order                ---
 ---------------------------------------------------
-CREATE TABLE IF NOT EXISTS  purchase_order ( 
+CREATE TABLE IF NOT EXISTS  purchase_order (
 	id                   INTEGER PRIMARY KEY  ,
 	order_id             TEXT NOT NULL    ,
 	name                 TEXT NOT NULL    ,
 	vendor_id            INTEGER   ,
 	order_date           DATE NOT NULL    ,
 	arrival_date         DATE     ,
-	status               TEXT     ,
-	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )
+	status_id            INTEGER NOT NULL   ,
+	FOREIGN KEY ( vendor_id ) REFERENCES vendor( id )  ,
+	FOREIGN KEY ( status_id ) REFERENCES po_status( id )
  );
 
 ---------------------------------------------------

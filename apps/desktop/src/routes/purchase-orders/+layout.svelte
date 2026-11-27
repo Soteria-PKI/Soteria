@@ -9,21 +9,18 @@
   // purchase order) shows a return button instead.
   const onList = $derived(page.route.id === "/purchase-orders");
 
-  // Filter buttons are built from the statuses present in the data.
-  const filters = $derived([
-    "All",
-    ...new Set(
-      poList.purchaseOrders
-        .map((po) => po.purchaseOrder.status)
-        .filter((s): s is string => !!s?.trim()),
-    ),
+  // One filter button per status in the po_status table, after "All".
+  const filters = $derived<{ value: "All" | number; label: string }[]>([
+    { value: "All", label: "All" },
+    ...poList.statuses.map((s) => ({ value: Number(s.id), label: s.name })),
   ]);
 
-  const countFor = (f: string) =>
+  const countFor = (f: "All" | number) =>
     f === "All"
       ? poList.purchaseOrders.length
-      : poList.purchaseOrders.filter((po) => po.purchaseOrder.status === f)
-          .length;
+      : poList.purchaseOrders.filter(
+          (po) => Number(po.purchaseOrder.statusId) === f,
+        ).length;
 </script>
 
 <section class="po-screen">
@@ -39,15 +36,15 @@
       </div>
 
       <div class="status-filter-bar">
-        {#each filters as f}
+        {#each filters as f (f.value)}
           <button
             type="button"
             class="filter-btn"
-            class:active={poList.activeFilter === f}
-            onclick={() => (poList.activeFilter = f)}
+            class:active={poList.activeFilter === f.value}
+            onclick={() => (poList.activeFilter = f.value)}
           >
-            {f}
-            <span class="filter-count">{countFor(f)}</span>
+            {f.label}
+            <span class="filter-count">{countFor(f.value)}</span>
           </button>
         {/each}
       </div>

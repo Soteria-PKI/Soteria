@@ -2,7 +2,11 @@
   import { onMount } from "svelte";
   import { invoke } from "@tauri-apps/api/core";
   import { poList } from "$lib/state/purchaseOrderList.svelte";
-  import { statusVariantOf } from "$lib/purchaseOrderStatus";
+  import {
+    loadPoStatuses,
+    statusName,
+    statusVariantOf,
+  } from "$lib/purchaseOrderStatus";
   import type { CompletePurchaseOrder } from "$lib/types/CompletePurchaseOrder";
   import type { Vendor } from "$lib/types/Vendor";
 
@@ -13,9 +17,10 @@
 
   onMount(async () => {
     try {
-      [vendors, poList.purchaseOrders] = await Promise.all([
+      [vendors, poList.purchaseOrders, poList.statuses] = await Promise.all([
         invoke<Vendor[]>("read_vendor"),
         invoke<CompletePurchaseOrder[]>("read_complete_purchase_order"),
+        loadPoStatuses(),
       ]);
     } catch (e) {
       error = String(e);
@@ -36,7 +41,10 @@
   const visible = $derived(
     purchaseOrders.filter((complete) => {
       const po = complete.purchaseOrder;
-      if (poList.activeFilter !== "All" && po.status !== poList.activeFilter)
+      if (
+        poList.activeFilter !== "All" &&
+        Number(po.statusId) !== poList.activeFilter
+      )
         return false;
       const q = poList.search.trim().toLowerCase();
       return (
@@ -69,7 +77,8 @@
         {#each visible as complete (complete.purchaseOrder.id)}
           {@const po = complete.purchaseOrder}
           {@const names = lineNames(complete)}
-          {@const variant = statusVariantOf(po.status)}
+          {@const status = statusName(poList.statuses, po.statusId)}
+          {@const variant = statusVariantOf(status)}
           <tr class={variant ? `row-status-${variant}` : ""}>
             <td>
               <a class="order-link" href="/purchase-orders/{po.id}"
@@ -97,11 +106,11 @@
               {/if}
             </td>
             <td>
-              {#if po.status?.trim()}
+              {#if status}
                 <span
                   class="status-pill {variant ? `status-pill-${variant}` : ''}"
                 >
-                  {po.status}
+                  {status}
                 </span>
               {:else}
                 <span class="cell-sub-text">—</span>

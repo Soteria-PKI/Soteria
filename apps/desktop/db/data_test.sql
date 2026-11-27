@@ -189,13 +189,18 @@ INSERT INTO junc_assembly_item (assembly_id, item_id, quantity) VALUES
 (5, 5, 4); 
 
 --------------------------------------------------- -- PURCHASE ORDER --------------------------------------------------- 
-INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status) VALUES
-(1, 'PO-2026-001', 'Brake Pad Restock', 1, '2026-09-01', '2026-09-04', 'Received'),
-(2, 'PO-2026-002', 'Motor Oil Restock', 2, '2026-09-03', '2026-09-06', 'Received'),
-(3, 'PO-2026-003', 'Air Filter Order', 3, '2026-09-05', '2026-09-09', 'Received'),
-(4, 'PO-2026-004', 'Battery Order', 4, '2026-09-07', '2026-09-12', 'In Transit'),
-(5, 'PO-2026-005', 'Ignition Restock', 5, '2026-09-10', NULL, 'Pending'),
-(6, 'PO-2026-006', 'Brake Service Supplies', 1, '2026-09-12', NULL, 'Pending');
+INSERT INTO po_status (id, name) VALUES
+(1, 'Pending'),
+(2, 'In Transit'),
+(3, 'Received');
+
+INSERT INTO purchase_order (id, order_id, name, vendor_id, order_date, arrival_date, status_id) VALUES
+(1, 'PO-2026-001', 'Brake Pad Restock', 1, '2026-09-01', '2026-09-04', 3),
+(2, 'PO-2026-002', 'Motor Oil Restock', 2, '2026-09-03', '2026-09-06', 3),
+(3, 'PO-2026-003', 'Air Filter Order', 3, '2026-09-05', '2026-09-09', 3),
+(4, 'PO-2026-004', 'Battery Order', 4, '2026-09-07', '2026-09-12', 2),
+(5, 'PO-2026-005', 'Ignition Restock', 5, '2026-09-10', NULL, 1),
+(6, 'PO-2026-006', 'Brake Service Supplies', 1, '2026-09-12', NULL, 1);
 
 --------------------------------------------------- -- PURCHASE ORDER / ITEM -- Many-to-many with quantity ---------------------------------------------------
 INSERT INTO junc_purchase_order_item (purchase_order_id, item_id, quantity) VALUES

@@ -19,11 +19,47 @@
             console.error("Failed to load service orders:", error);
         }
     });
+
+    let deleteError: string | null = $state(null);
+
+    async function deleteOrder(order: ServiceOrder) {
+        if (!confirm(`Delete service order #${order.id}? This can't be undone.`)) return;
+        deleteError = null;
+        try {
+            await invoke("delete_service_order", { id: order.id });
+            items = items.filter((o) => o.id !== order.id);
+        } catch (error) {
+            deleteError = `Couldn't delete service order #${order.id}: ${error}`;
+        }
+    }
 </script>
 
-<List
-    items={items}
-    filter={Myfilters}
-    href={(order) => `/ServiceOrder/Edit?id=${order.id}`}
-></List>
-<a href="/ServiceOrder/Edit">create</a>
+<section class="so-screen">
+    <div class="table-toolbar">
+        {#if deleteError}
+            <span class="cell-sub-text">{deleteError}</span>
+        {/if}
+        <a class="btn btn-primary" href="/ServiceOrder/Edit">New service order</a>
+    </div>
+
+    <List
+        items={items}
+        filter={Myfilters}
+        href={(order) => `/ServiceOrder/Edit?id=${order.id}`}
+        onDelete={deleteOrder}
+    ></List>
+</section>
+
+<style>
+    /* Matches the purchase orders screen */
+    .so-screen {
+        width: 100%;
+        min-height: 100vh;
+        box-sizing: border-box;
+        background: var(--surface-subtle, #f1f5f9);
+        font-family: var(--font-sans, "DM Sans", sans-serif);
+    }
+    .table-toolbar {
+        justify-content: flex-end;
+    }
+</style>
